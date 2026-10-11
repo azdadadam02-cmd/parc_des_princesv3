@@ -1,0 +1,175 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #1a1a2e;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.bonde-container {
+    background-color: #252542; 
+    width: 100%;
+    max-width: 600px;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-top: 8px solid var(--theme-color);
+}
+
+.bonde-header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px dashed #444;
+    padding-bottom: 20px;
+}
+
+.logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 80px;
+    margin: 0;
+}
+
+.bonde-header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: var(--theme-color);
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.bonde-header p {
+    color: #aaa;
+    margin: 5px 0 0 0;
+    font-size: 14px;
+}
+
+.bonde-body {
+    margin-bottom: 30px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.info-label {
+    font-weight: 600;
+    color: #ccc;
+}
+
+.info-value {
+    font-weight: bold;
+    color: #fff;
+}
+
+.info-value .email-client {
+    color: #aaa;
+    font-weight: normal;
+    font-size: 13px;
+}
+
+.info-value .non-renseigne {
+    color: #888;
+    font-style: italic;
+}
+
+.status-badge {
+    background-color: rgba(255,255,255,0.1);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--theme-color);
+    border: 1px solid var(--theme-color);
+}
+
+.tickets-section {
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.tickets-section h3 {
+    color: var(--theme-color);
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+    font-size: 24px;
+    margin: 0 0 15px 0;
+}
+
+.tickets-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.tickets-table thead tr {
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    color: #ccc;
+    text-align: left;
+}
+
+.tickets-table th, .tickets-table td {
+    padding: 12px 5px;
+}
+
+.tickets-table td {
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.prix-unite { color: #ccc; }
+.sous-total { font-weight: bold; color: #fff; }
+.empty-msg { padding: 15px; text-align: center; color: #888; }
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--theme-color);
+}
+
+.btn-retour {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: transparent;
+    color: #fff;
+    border: 2px solid #555;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.btn-retour:hover {
+    background-color: #555;
+}
+
+.btn-print {
+    background-color: var(--theme-color);
+    border-color: var(--theme-color);
+}
+
+.btn-print:hover {
+    opacity: 0.8;
+}

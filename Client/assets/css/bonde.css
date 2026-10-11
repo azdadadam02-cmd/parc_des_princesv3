@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #1a1a2e;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.bonde-container {
+    background-color: #252542; 
+    width: 100%;
+    max-width: 600px;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-top: 8px solid var(--theme-color);
+}
+.logo{
+    position: absolute;
+    left: 25%;
+    top: 5%;
+    width: auto;
+    height: 80px;
+
+}
+
+.bonde-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px dashed #444;
+    padding-bottom: 20px;
+}
+
+.bonde-header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: var(--theme-color);
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.bonde-header p {
+    color: #aaa;
+    margin: 5px 0 0 0;
+    font-size: 14px;
+}
+
+.bonde-body {
+    margin-bottom: 30px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.info-label {
+    font-weight: 600;
+    color: #ccc;
+}
+
+.info-value {
+    font-weight: bold;
+    color: #fff;
+}
+
+.status-badge {
+    background-color: rgba(255,255,255,0.1);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--theme-color);
+    border: 1px solid var(--theme-color);
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--theme-color);
+}
+
+.btn-retour {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: transparent;
+    color: #fff;
+    border: 2px solid #555;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.btn-retour:hover {
+    background-color: #555;
+}
+
+.btn-print {
+    width: 40%;
+    background-color: var(--theme-color);
+    border-color: var(--theme-color);
+}
+
+.btn-print:hover {
+    opacity: 0.8;
+}
