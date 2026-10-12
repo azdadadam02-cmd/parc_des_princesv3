@@ -3,40 +3,37 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 
+$recherche = trim($_GET['q'] ?? '');
+$etat = trim($_GET['etat'] ?? '');
 
-$recherche =
-    trim($_GET['q'] ?? '');
+$categorie = filter_input(
+    INPUT_GET,
+    'categorie',
+    FILTER_VALIDATE_INT
+);
 
-$etat =
-    trim($_GET['etat'] ?? '');
+$stmt_categories = $pdo->query("
+    SELECT id_categorie, nom_categorie
+    FROM categorie
+    ORDER BY nom_categorie
+");
 
-$categorie =
-    filter_input(
-        INPUT_GET,
-        'categorie',
-        FILTER_VALIDATE_INT
-    );
-
+$categories = $stmt_categories->fetchAll(PDO::FETCH_ASSOC);
 
 $sql = "
     SELECT
         j.*,
         c.nom_categorie,
         CONCAT(u.prenom, ' ', u.nom) AS responsable_nom
-
     FROM jeu j
-
     LEFT JOIN categorie c
         ON j.id_categorie = c.id_categorie
-
     LEFT JOIN utilisateur u
         ON j.email_responsable = u.email
-
-    WHERE j.etat <> 'hors service'
+    WHERE 1 = 1
 ";
 
 $params = [];
-
 
 if ($recherche !== '') {
 
@@ -48,17 +45,14 @@ if ($recherche !== '') {
         '%' . $recherche . '%';
 }
 
-
 if ($etat !== '') {
 
     $sql .= "
         AND j.etat = :etat
     ";
 
-    $params[':etat'] =
-        $etat;
+    $params[':etat'] = $etat;
 }
-
 
 if ($categorie) {
 
@@ -66,22 +60,18 @@ if ($categorie) {
         AND j.id_categorie = :categorie
     ";
 
-    $params[':categorie'] =
-        $categorie;
+    $params[':categorie'] = $categorie;
 }
-
 
 $sql .= "
     ORDER BY j.id_jeu DESC
 ";
 
-
 $stmt = $pdo->prepare($sql);
 
 $stmt->execute($params);
 
-$jeux =
-    $stmt->fetchAll(PDO::FETCH_ASSOC);
+$jeux = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -106,128 +96,125 @@ $jeux =
 
 <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
 
-
 <main class="jeux-page">
 
     <div class="page-header">
 
         <div>
+
             <h1>Gestion des jeux</h1>
 
             <p>
                 Liste des jeux du parc
             </p>
+
         </div>
 
-
         <a href="ajouter.php" class="btn-add">
+
             <span>＋</span>
+
             Ajouter un jeu
+
         </a>
 
     </div>
 
-
     <form
-    method="GET"
-    class="filters-box"
->
-
-    <input
-        type="text"
-        name="q"
-        placeholder="Rechercher un jeu..."
-        value="<?= htmlspecialchars($recherche) ?>"
+        method="GET"
+        class="filters-box"
     >
 
-
-    <select name="etat">
-
-        <option value="">
-            Tous les états
-        </option>
-
-        <option
-            value="disponible"
-            <?= $etat === 'disponible' ? 'selected' : '' ?>
+        <input
+            type="text"
+            name="q"
+            placeholder="Rechercher un jeu..."
+            value="<?= htmlspecialchars($recherche) ?>"
         >
-            Disponible
-        </option>
 
-        <option
-            value="en fonctionnement"
-            <?= $etat === 'en fonctionnement' ? 'selected' : '' ?>
-        >
-            En fonctionnement
-        </option>
+        <select name="etat">
 
-        <option
-            value="en maintenance"
-            <?= $etat === 'en maintenance' ? 'selected' : '' ?>
-        >
-            En maintenance
-        </option>
-
-        <option
-            value="hors service"
-            <?= $etat === 'hors service' ? 'selected' : '' ?>
-        >
-            Hors service
-        </option>
-
-        <option
-            value="fermé temporairement"
-            <?= $etat === 'fermé temporairement' ? 'selected' : '' ?>
-        >
-            Fermé temporairement
-        </option>
-
-    </select>
-
-
-    <select name="categorie">
-
-        <option value="">
-            Toutes les catégories
-        </option>
-
-        <?php foreach ($categories as $cat): ?>
-
-            <option
-                value="<?= $cat['id_categorie'] ?>"
-                <?= $categorie == $cat['id_categorie']
-                    ? 'selected'
-                    : '' ?>
-            >
-
-                <?= htmlspecialchars(
-                    $cat['nom_categorie']
-                ) ?>
-
+            <option value="">
+                Tous les états
             </option>
 
-        <?php endforeach; ?>
+            <option
+                value="disponible"
+                <?= $etat === 'disponible' ? 'selected' : '' ?>
+            >
+                Disponible
+            </option>
 
-    </select>
+            <option
+                value="en fonctionnement"
+                <?= $etat === 'en fonctionnement' ? 'selected' : '' ?>
+            >
+                En fonctionnement
+            </option>
 
+            <option
+                value="en maintenance"
+                <?= $etat === 'en maintenance' ? 'selected' : '' ?>
+            >
+                En maintenance
+            </option>
 
-    <button
-        type="submit"
-        class="btn-search"
-    >
-        Rechercher
-    </button>
+            <option
+                value="hors service"
+                <?= $etat === 'hors service' ? 'selected' : '' ?>
+            >
+                Hors service
+            </option>
 
+            <option
+                value="fermé temporairement"
+                <?= $etat === 'fermé temporairement' ? 'selected' : '' ?>
+            >
+                Fermé temporairement
+            </option>
 
-    <a
-        href="index.php"
-        class="btn-reset"
-    >
-        Réinitialiser
-    </a>
+        </select>
 
-</form>
+        <select name="categorie">
 
+            <option value="">
+                Toutes les catégories
+            </option>
+
+            <?php foreach ($categories as $cat): ?>
+
+                <option
+                    value="<?= (int)$cat['id_categorie'] ?>"
+                    <?= $categorie == $cat['id_categorie']
+                        ? 'selected'
+                        : '' ?>
+                >
+
+                    <?= htmlspecialchars(
+                        $cat['nom_categorie']
+                    ) ?>
+
+                </option>
+
+            <?php endforeach; ?>
+
+        </select>
+
+        <button
+            type="submit"
+            class="btn-search"
+        >
+            Rechercher
+        </button>
+
+        <a
+            href="index.php"
+            class="btn-reset"
+        >
+            Réinitialiser
+        </a>
+
+    </form>
 
     <div class="table-box">
 
@@ -235,210 +222,190 @@ $jeux =
 
             <thead>
 
-    <tr>
+                <tr>
 
-        <th>ID</th>
-        <th>Image</th>
-        <th>Nom</th>
-        <th>Catégorie</th>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Nom</th>
+                    <th>Catégorie</th>
+                    <th>Âge min</th>
+                    <th>Capacité</th>
+                    <th>Durée</th>
+                    <th>Tarif</th>
+                    <th>État</th>
+                    <th>Date mise en service</th>
+                    <th>Responsable</th>
+                    <th>Description</th>
+                    <th>Actions</th>
 
-        <th>Âge min</th>
+                </tr>
 
-        <th>Capacité</th>
-
-        <th>Durée</th>
-
-        <th>Tarif</th>
-        <th>État</th>
-
-        <th>Date mise en service</th>
-
-        <th>Responsable</th>
-
-        <th>Description</th>
-
-        <th>Actions</th>
-
-    </tr>
-
-</thead>
-
+            </thead>
 
             <tbody>
 
             <?php if (count($jeux) > 0): ?>
 
-
                 <?php foreach ($jeux as $jeu): ?>
 
-             <tr>
+                    <tr>
 
-    <!-- ID -->
-    <td>
-        <?= $jeu['id_jeu'] ?>
-    </td>
+                        <td>
+                            <?= (int)$jeu['id_jeu'] ?>
+                        </td>
 
+                        <td>
 
-    <!-- IMAGE -->
-    <td>
+                            <?php if (!empty($jeu['img_jeu'])): ?>
 
-        <?php if (!empty($jeu['img_jeu'])): ?>
+                                <img
+                                    src="<?= htmlspecialchars($jeu['img_jeu']) ?>"
+                                    alt="<?= htmlspecialchars($jeu['nom']) ?>"
+                                    class="jeu-thumb"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';"
+                                >
 
-            <img
-                src="/parc-des-prince/admin/uploads/jeux/<?= htmlspecialchars($jeu['img_jeu']) ?>"
-                alt="<?= htmlspecialchars($jeu['nom']) ?>"
-                class="jeu-thumb"
-            >
+                                <span style="display:none;">
+                                    Image indisponible
+                                </span>
 
-        <?php else: ?>
+                            <?php else: ?>
 
-            <span>Aucune image</span>
+                                <span>
+                                    Aucune image
+                                </span>
 
-        <?php endif; ?>
+                            <?php endif; ?>
 
-    </td>
+                        </td>
 
+                        <td>
+                            <?= htmlspecialchars($jeu['nom']) ?>
+                        </td>
 
-    <!-- NOM -->
-    <td>
-        <?= htmlspecialchars($jeu['nom']) ?>
-    </td>
+                        <td>
 
+                            <?= htmlspecialchars(
+                                $jeu['nom_categorie']
+                                ?? 'Non définie'
+                            ) ?>
 
-    <!-- CATEGORIE -->
-    <td>
+                        </td>
 
-        <?= htmlspecialchars(
-            $jeu['nom_categorie']
-            ?? 'Non définie'
-        ) ?>
+                        <td>
 
-    </td>
+                            <?= $jeu['age_min'] !== null
+                                && $jeu['age_min'] !== ''
+                                ? htmlspecialchars($jeu['age_min']) . ' ans'
+                                : '-' ?>
 
+                        </td>
 
-    <!-- AGE MINIMUM -->
-    <td>
+                        <td>
+                            <?= htmlspecialchars($jeu['capacite']) ?>
+                        </td>
 
-        <?= $jeu['age_min'] !== null && $jeu['age_min'] !== ''
-            ? htmlspecialchars($jeu['age_min']) . ' ans'
-            : '-' ?>
+                        <td>
 
-    </td>
+                            <?= $jeu['duree_session'] !== null
+                                && $jeu['duree_session'] !== ''
+                                ? htmlspecialchars($jeu['duree_session']) . ' min'
+                                : '-' ?>
 
+                        </td>
 
-    <!-- CAPACITE -->
-    <td>
-        <?= htmlspecialchars($jeu['capacite']) ?>
-    </td>
+                        <td>
+                            <?= number_format(
+                                (float)$jeu['tarif'],
+                                2
+                            ) ?> DH
+                        </td>
 
+                        <td>
 
-    <!-- DUREE SESSION -->
-    <td>
+                            <span class="badge-etat">
 
-        <?= $jeu['duree_session'] !== null && $jeu['duree_session'] !== ''
-            ? htmlspecialchars($jeu['duree_session']) . ' min'
-            : '-' ?>
+                                <?= htmlspecialchars(
+                                    $jeu['etat']
+                                ) ?>
 
-    </td>
+                            </span>
 
+                        </td>
 
-    <!-- TARIF -->
-    <td>
-        <?= htmlspecialchars($jeu['tarif']) ?> DH
-    </td>
+                        <td>
 
+                            <?= !empty($jeu['date_mise_service'])
+                                ? htmlspecialchars(
+                                    $jeu['date_mise_service']
+                                )
+                                : '-' ?>
 
-    <!-- ETAT -->
-    <td>
+                        </td>
 
-        <span class="badge-etat">
+                        <td>
 
-            <?= htmlspecialchars($jeu['etat']) ?>
+                            <?= !empty($jeu['responsable_nom'])
+                                ? htmlspecialchars(
+                                    $jeu['responsable_nom']
+                                )
+                                : 'Non affecté' ?>
 
-        </span>
+                        </td>
 
-    </td>
+                        <td class="description-cell">
 
+                            <?= !empty($jeu['description'])
+                                ? htmlspecialchars(
+                                    $jeu['description']
+                                )
+                                : '-' ?>
 
-    <!-- DATE MISE EN SERVICE -->
-    <td>
+                        </td>
 
-        <?= !empty($jeu['date_mise_service'])
-            ? htmlspecialchars($jeu['date_mise_service'])
-            : '-' ?>
+                        <td>
 
-    </td>
+                            <div class="actions-box">
 
+                                <a
+                                    href="details.php?id=<?= (int)$jeu['id_jeu'] ?>"
+                                    class="btn-view"
+                                >
+                                    Voir
+                                </a>
 
-    <!-- RESPONSABLE -->
-    <td>
+                                <a
+                                    href="modifier.php?id=<?= (int)$jeu['id_jeu'] ?>"
+                                    class="btn-edit"
+                                >
+                                    Modifier
+                                </a>
 
-        <?= !empty($jeu['responsable_nom'])
-            ? htmlspecialchars($jeu['responsable_nom'])
-            : 'Non affecté' ?>
+                                <a
+                                    href="supprimer.php?id=<?= (int)$jeu['id_jeu'] ?>"
+                                    class="btn-delete"
+                                    onclick="return confirm('Voulez-vous vraiment supprimer définitivement ce jeu ?')"
+                                >
+                                    Supprimer
+                                </a>
 
-    </td>
+                            </div>
 
+                        </td>
 
-    <!-- DESCRIPTION -->
-    <td class="description-cell">
-
-        <?= !empty($jeu['description'])
-            ? htmlspecialchars($jeu['description'])
-            : '-' ?>
-
-    </td>
-
-
-    <!-- ACTIONS -->
-    <td>
-
-        <div class="actions-box">
-
-            <a
-                href="details.php?id=<?= $jeu['id_jeu'] ?>"
-                class="btn-view"
-            >
-                Voir
-            </a>
-
-            <a
-                href="modifier.php?id=<?= $jeu['id_jeu'] ?>"
-                class="btn-edit"
-            >
-                Modifier
-            </a>
-
-            <a
-                href="supprimer.php?id=<?= $jeu['id_jeu'] ?>"
-                class="btn-delete"
-                onclick="return confirm('Voulez-vous vraiment supprimer définitivement ce jeu ?')"
-            >
-                supprimer
-            </a>
-
-        </div>
-
-    </td>
-
-</tr>
+                    </tr>
 
                 <?php endforeach; ?>
 
-
             <?php else: ?>
-
 
                 <tr>
 
                     <td colspan="13">
-
                         Aucun jeu enregistré.
-
                     </td>
 
                 </tr>
-
 
             <?php endif; ?>
 
