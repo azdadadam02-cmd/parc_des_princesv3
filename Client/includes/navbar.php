@@ -61,8 +61,10 @@ if(isset($_SESSION['user_email'])) {
 
 <div class="top">
     <img src="<?php echo $CLIENT_URL; ?>/img/logo.png" class="logo">
+
     <nav class="navbar">
         <a href="<?php echo $ROOT_URL; ?>/index.php">Accueil</a>
+        <a href="https://maps.app.goo.gl/i5cZtAKhvjNpBfdm9" target="_blank" >localisation</a>
         
         <?php if(isset($_SESSION['user_email'])): ?>
             <a href="<?php echo $CLIENT_URL; ?>/actions/logout.php" style="color: #ff4d4d;">Déconnexion</a>
@@ -84,7 +86,7 @@ if(isset($_SESSION['user_email'])) {
                     $sous_total = $ticket['tarif'] * $ticket['quantite'];
                     $total_panier += $sous_total;
                     echo "<div class='panier-item'>";
-                    echo "  <img src='" . $CLIENT_URL . '/' . htmlspecialchars($ticket['img']) . "' alt='jeu' class='panier-img'>";
+                    echo "  <img src='" . htmlspecialchars($ticket['img_jeu'] ?? $ticket['img'] ?? '') . "' alt='jeu' class='panier-img'>";
                     echo "  <div class='panier-details'>";
                     echo "      <p class='panier-nom'>" . htmlspecialchars($ticket['nom']) . "</p>";
                     echo "      <p class='panier-prix'>" . $ticket['quantite'] . " x " . $ticket['tarif'] . " MAD = <strong>" . $sous_total . " MAD</strong></p>";
