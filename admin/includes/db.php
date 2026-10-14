@@ -3,7 +3,7 @@
 $host = "localhost";
 $dbname = "parc_des_prince";
 $username = "root";
-$password = "1234";
+$password = "";
 
 try {
   
