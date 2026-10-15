@@ -18,9 +18,9 @@ require __DIR__ . '/admin/includes/db.php';
     
     <section class="section1">
         <div class="down">
-            <h1 class="titre-principal">COMMENCER</h1>
-            <h2 class="sous-titre">UNE NOUVELLE ÈRE DU GAMING</h2>
-            <a href="#section2" class="btn-browse">DÉCOUVRIR</a>
+            <h1 class="titre-principal">VIVEZ L’AVENTURE</h1>
+            <h2 class="sous-titre">JEUX  DÉFIS  ÉMOTIONS  SOUVENIRS</h2>
+            <a href="#section2" class="btn-browse">DÉCOUVRIR LE PARC</a>
         </div>
     </section>
 
