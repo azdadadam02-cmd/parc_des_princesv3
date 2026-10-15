@@ -8,9 +8,7 @@ require_once __DIR__ . '/admin/includes/db.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
-    /* =====================================================
-       LOGIN
-    ===================================================== */
+  
 
     if (isset($_POST['btn_login'])) {
 
