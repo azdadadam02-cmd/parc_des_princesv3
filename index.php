@@ -29,8 +29,7 @@ require __DIR__ . '/admin/includes/db.php';
         </div>
     </section>
     <section class = "section2-2">
-
-            
+        <a href="Client/catg5.php" class="btn-browse-CAT5">DÉCOUVRIR</a> 
     </section>
 
     <section class="section3">
