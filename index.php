@@ -18,13 +18,19 @@ require __DIR__ . '/admin/includes/db.php';
     
     <section class="section1">
         <div class="down">
-            <h1 class="titre-principal">COMMENCER</h1>
-            <h2 class="sous-titre">UNE NOUVELLE ÈRE DU GAMING</h2>
-            <a href="#section2" class="btn-browse">DÉCOUVRIR</a>
+    
         </div>
+        <a href="#section2" class="btn-browse">voire les tiket</a>
     </section>
 
     <section class="section2" id="section2">
+        <div class="tiket">
+
+        </div>
+    </section>
+    <section class = "section2-2">
+
+            
     </section>
 
     <section class="section3">
