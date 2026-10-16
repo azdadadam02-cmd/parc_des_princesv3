@@ -5,5 +5,5 @@ session_start();
 session_unset();
 session_destroy();
 
-header("Location: /parc-des-prince/login.php");
+header("Location: /parc_des_princesv3/login.php");
 exit;
