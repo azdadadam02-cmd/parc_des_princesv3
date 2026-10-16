@@ -33,3 +33,25 @@ document.getElementById('panierDropdown').addEventListener('click', function(eve
         });
     }
 });
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tiket-tab');
+    const cards = document.querySelectorAll('.tiket-card');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // 1. N7iydo s-ster (active) mn ga3 les tabs w n3tiwh l hada li cliquina 3lih
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            // 2. N-filtriw les cartes 3la 7sab l'catégorie
+            const selectedCat = this.getAttribute('data-cat');
+            cards.forEach(card => {
+                if (selectedCat === 'all' || card.getAttribute('data-cat') === selectedCat) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
