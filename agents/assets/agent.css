@@ -1,3 +1,5 @@
+
+Agent · CSS
 /* =========================================================
    ESPACE AGENT DE VENTE — styles complémentaires
    (s'ajoute à style.css, ne modifie rien de l'existant)
@@ -13,7 +15,7 @@
     gap: 1rem;
 }
 .agent-side { flex: 1 1 0; min-width: 0; }            /* même largeur à gauche et à droite -> menu centré */
-.agent-side--end { text-align: right; }
+.agent-side--end { flex: 0 0 auto; text-align: right; }   /* largeur du contenu : email + Déconnexion sur une ligne */
 .agent-header .nav-pill {
     flex: 0 1 auto;
     min-width: 0;
@@ -26,7 +28,6 @@
 }
 .agent-header .nav-pill::-webkit-scrollbar { display: none; }
 .agent-header .nav-pill a { white-space: nowrap; }
-.agent-header .user-badge { max-width: 100%; }
 
 @media (max-width: 820px) {
     .agent-header-inner { flex-wrap: wrap; }
@@ -109,3 +110,6 @@
     .table, .table td, .table th, .page-title, .box-value, h1, h2, h3 { color: #000 !important; }
     .code-billet { color: #000 !important; }
 }
+ 
+
+

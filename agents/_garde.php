@@ -37,6 +37,19 @@ const EMAIL_VISITEUR   = 'visiteur@parc.local'; // compte "client de passage"
 
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
+/**
+ * Icône SVG en trait (même style que la sidebar admin).
+ * Usage : <?= icone('billet') ?>  — la couleur suit le texte (currentColor).
+ */
+function icone(string $nom): string
+{
+    static $formes = [
+        'billet' => '<path d="M3 8.5V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a2.5 2.5 0 0 0 0 5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3.5a2.5 2.5 0 0 0 0-5z"/><path d="M14 5v14" stroke-dasharray="2 2.5"/>',
+    ];
+    $d = $formes[$nom] ?? '';
+    return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $d . '</svg>';
+}
+
 function ucfirst_fr(string $s): string {
     return mb_strtoupper(mb_substr($s, 0, 1)) . mb_substr($s, 1);
 }
@@ -383,8 +396,43 @@ function entete(string $titre, bool $afficherTitre = true): void {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= h($titre) ?> - Parc des Princes</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <link rel="stylesheet" href="assets/agent.css">
+    <link rel="stylesheet" href="assets/style.css?v=<?= @filemtime(__DIR__ . '/assets/style.css') ?: time() ?>">
+    <link rel="stylesheet" href="assets/agent.css?v=<?= @filemtime(__DIR__ . '/assets/agent.css') ?: time() ?>">
+    <style>
+        /* Header agent : logo | menu | compte (email + Déconnexion) sur UNE ligne */
+        .agent-header .agent-side--end { flex: 0 0 auto; text-align: right; margin-left: clamp(1.5rem, 4vw, 4rem); }   /* espace entre le menu et l'email */
+        .agent-header .header-account {
+            display: inline-flex; align-items: center; justify-content: flex-end;
+            flex-wrap: nowrap; gap: 12px; max-width: 100%;
+        }
+        .agent-header .profile-box {
+            display: flex; align-items: center; gap: 12px; min-width: 0;
+            padding: 5px 16px 5px 5px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 50px;
+            background: rgba(19, 17, 44, 0.85);
+        }
+        .agent-header .profile-circle {
+            display: grid; place-items: center; flex-shrink: 0;
+            width: 34px; height: 34px; border-radius: 50%;
+            background: #4f46e5; color: #fff; font-size: 14px; font-weight: 700;
+        }
+        .agent-header .profile-email {
+            font-size: 13px; color: #e2e8f0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .agent-header .logout-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-height: 44px; padding: 10px 18px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 14px;
+            background: rgba(239, 68, 68, 0.08);
+            color: #f87171; font-size: 13px; font-weight: 600;
+            white-space: nowrap; text-decoration: none;
+            transition: border-color 0.2s ease;
+        }
+        .agent-header .logout-btn:hover { border-color: currentColor; }
+    </style>
 </head>
 <body>
 
@@ -402,7 +450,13 @@ function entete(string $titre, bool $afficherTitre = true): void {
         </nav>
 
         <div class="agent-side agent-side--end">
-            <a href="../logout.php" class="user-badge" title="Se déconnecter">👤 <?= h($email) ?></a>
+            <div class="header-account">
+                <div class="profile-box" title="<?= h($email) ?>">
+                    <span class="profile-circle"><?= h(strtoupper(substr($email, 0, 1))) ?></span>
+                    <span class="profile-email"><?= h($email) ?></span>
+                </div>
+                <a href="../logout.php" class="logout-btn">Déconnexion</a>
+            </div>
         </div>
 
     </div>
