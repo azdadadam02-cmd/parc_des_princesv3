@@ -154,9 +154,186 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    position: relative;
     height: 100vh;
     margin: 0;
     display: flex;
+}
+.tiket {
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+    margin: 0;
+    padding: 35px 50px;
+    /* L'background dégradé bhal tswira */
+    background: linear-gradient(135deg, #070935 0%, #170b3b 55%, #3b0944 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Header & Tabs (GROUPS, SPECIAL, JOURNE) */
+.tiket-header {
+    width: 100%;
+    margin-bottom: 35px;
+}
+
+.tiket-tabs {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.tiket-tab {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    text-transform: uppercase;
+    padding-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.tiket-tab.active,
+.tiket-tab:hover {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 3px;
+}
+
+.tiket-divider {
+    width: 100%;
+    height: 2px;
+    background-color: #ffffff;
+}
+
+/* Container dyal les cartes */
+.tiket-cards-container {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    overflow-y: auto;
+}
+
+/* Design dyal kol carte */
+.tiket-card {
+    width: 290px;
+    border-radius: 35px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+}
+
+.tiket-card:hover {
+    transform: translateY(-8px);
+}
+
+/* Partie 1 : Titre lfo9 (Gris foncé) */
+.tiket-card-top {
+    background-color: #8c8c8c;
+    padding: 22px 25px;
+    min-height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.tiket-card-top h2 {
+    margin: 0;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    line-height: 1.05;
+    color: #0b0b0b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Partie 2 : Les attributs f l'west (Gris clair) */
+.tiket-card-body {
+    background-color: #d6d6d6;
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.tiket-info-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tiket-circle {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.tiket-info-row p {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0b0b0b;
+    text-transform: uppercase;
+    text-align: center;
+    flex-grow: 1;
+    line-height: 1.3;
+}
+
+/* Partie 3 : Prix w Bouton lte7t (Blanc) */
+.tiket-card-bottom {
+    background-color: #ffffff;
+    padding: 15px 25px 22px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tiket-prix {
+    width: 100%;
+    text-align: left;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    color: #0b0b0b;
+    margin-bottom: 8px;
+    line-height: 1;
+}
+
+.btn-achetier {
+    background-color: #1c0936;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 12px 45px;
+    border-radius: 50px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-achetier:hover {
+    background-color: #5a55ff;
+    transform: scale(1.05);
 }
 .btn-browse {
     position: absolute;
@@ -188,17 +365,7 @@ body {
     color: #ffffff;
     box-shadow: 0 0 15px rgba(90, 85, 255, 0.6);
 }
-.tiket{
-    position: absolute;
-    background-color: #fefeff;
-    bottom: 5%;
-    
-    width: 90%;
-    height: 90%;
-    left:5%;
-    margin: 0;
-    padding: 0;
-}
+
 .section2-2{
     background-image: url('../../img/CAT5.png');
     backdrop-filter: blur(0px);
