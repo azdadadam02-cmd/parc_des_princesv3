@@ -103,8 +103,7 @@ if(isset($_SESSION['user_email'])) {
         <?php if(isset($_SESSION['panier']) && count($_SESSION['panier']) > 0): ?>
             <div class="panier-footer">
                 <p>Total: <strong><?php echo $total_panier; ?> MAD</strong></p>
-                <a href="<?php echo $CLIENT_URL; ?>/valider_reservation.php" class="btn-valider">RESERVER</a>
-            </div>
+<a href="<?php echo $CLIENT_URL; ?>/valider_reservation.php" class="btn-valider" onclick="verifierConnexion(event)">RESERVER</a>            </div>
         <?php endif; ?>
     </div>
 
@@ -171,13 +170,8 @@ var isUserConnected = <?php echo isset($_SESSION['user_email']) ? 'true' : 'fals
 var CLIENT_URL = '<?php echo $CLIENT_URL; ?>';
 var ROOT_URL = '<?php echo $ROOT_URL; ?>';
 
-function togglePanier() {
-    if (!isUserConnected) { 
-        alert("Veuillez vous connecter pour accéder à votre panier.");
-        window.location.href = ROOT_URL + "/login.php"; 
-        return; 
-    } 
 
+function togglePanier() {
     var panier = document.getElementById("panierDropdown");
     if(panier) {
         panier.classList.toggle("show");
@@ -186,6 +180,15 @@ function togglePanier() {
     var notif = document.getElementById("notifDropdown");
     if(notif && notif.classList.contains("show")) {
         notif.classList.remove("show");
+    }
+}
+
+
+function verifierConnexion(event) {
+    if (!isUserConnected) { 
+        event.preventDefault(); 
+        alert("Veuillez vous connecter pour valider votre réservation.");
+        window.location.href = ROOT_URL + "/login.php"; 
     }
 }
 

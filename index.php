@@ -18,13 +18,18 @@ require __DIR__ . '/admin/includes/db.php';
     
     <section class="section1">
         <div class="down">
-            <h1 class="titre-principal">VIVEZ L’AVENTURE</h1>
-            <h2 class="sous-titre">JEUX  DÉFIS  ÉMOTIONS  SOUVENIRS</h2>
-            <a href="#section2" class="btn-browse">DÉCOUVRIR LE PARC</a>
+    
         </div>
+        <a href="#section2" class="btn-browse">voire les tiket</a>
     </section>
 
     <section class="section2" id="section2">
+        <div class="tiket">
+
+        </div>
+    </section>
+    <section class = "section2-2">
+        <a href="Client/catg5.php" class="btn-browse-CAT5">DÉCOUVRIR</a> 
     </section>
 
     <section class="section3">
