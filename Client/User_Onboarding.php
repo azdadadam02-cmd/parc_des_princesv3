@@ -13,9 +13,7 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parc des Princes - Guide & Aide (Onboarding)</title>
-    <!-- CSS dyal Navbar w Panier -->
     <link rel="stylesheet" href="assets/css/index.css?v=<?php echo time(); ?>">
-    <!-- CSS dyal User Onboarding -->
     <link rel="stylesheet" href="assets/css/User_Onboarding.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -23,7 +21,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
 
     <?php include __DIR__ . '/includes/navbar.php'; ?>
 
-    <!-- 1. HERO HEADER -->
     <header class="onboard-hero">
         <div class="onboard-hero-content">
             <span class="onboard-badge"><i class="fas fa-compass"></i> GUIDE UTILISATEUR</span>
@@ -39,11 +36,9 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
         </div>
     </header>
 
-    <!-- 2. VERTICAL TIMELINE (LES 4 ÉTAPES AVEC IMAGES) -->
     <section class="onboard-timeline-section" id="guide-timeline">
         <div class="timeline-container">
 
-            <!-- ÉTAPE 1 : CHOISIR UN TICKET OU UN JEU -->
             <div class="timeline-item">
                 <div class="timeline-marker">1</div>
                 <div class="timeline-content">
@@ -70,7 +65,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
                         </ul>
                     </div>
 
-                    <!-- Tswira dyal l-5otwa 1 -->
                     <div class="timeline-media">
                         <div class="media-Browser-bar">
                             <span class="dot red"></span>
@@ -79,7 +73,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
                             <span class="browser-title">Aperçu : Sélection des Tickets</span>
                         </div>
                         <div class="media-frame">
-                            <!-- Beddel src b tswira dyalk f Client/img/ -->
                             <img src="img/onboarding_step1.png" alt="Étape 1 - Choisir un Ticket" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="media-fallback">
                                 <i class="fas fa-ticket-alt"></i>
@@ -91,7 +84,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
                 </div>
             </div>
 
-            <!-- ÉTAPE 2 : GÉRER LE PANIER -->
             <div class="timeline-item">
                 <div class="timeline-marker">2</div>
                 <div class="timeline-content reverse">
@@ -123,7 +115,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
                         </ul>
                     </div>
 
-                    <!-- Tswira dyal l-5otwa 2 -->
                     <div class="timeline-media">
                         <div class="media-Browser-bar">
                             <span class="dot red"></span>
@@ -143,7 +134,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
                 </div>
             </div>
 
-            <!-- ÉTAPE 3 : FORMULAIRE DE VALIDATION -->
             <div class="timeline-item">
                 <div class="timeline-marker">3</div>
                 <div class="timeline-content">
@@ -175,7 +165,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
                         </ul>
                     </div>
 
-                    <!-- Tswira dyal l-5otwa 3 -->
                     <div class="timeline-media">
                         <div class="media-Browser-bar">
                             <span class="dot red"></span>
@@ -195,7 +184,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
                 </div>
             </div>
 
-            <!-- ÉTAPE 4 : QUE SE PASSE-T-IL APRÈS ? (STATUT EN ATTENTE & BON DE RÉSERVATION) -->
             <div class="timeline-item">
                 <div class="timeline-marker">4</div>
                 <div class="timeline-content reverse">
@@ -206,7 +194,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
                             Une fois votre réservation confirmée, vos places sont immédiatement réservées dans le système et une notification apparaît dans votre profil en haut à droite.
                         </p>
 
-                        <!-- Box d'explication importante bach mayshabch l-app khassra -->
                         <div class="status-reassurance-box">
                             <h4><i class="fas fa-shield-alt"></i> Pourquoi le statut affiche-t-il "en attente" ?</h4>
                             <p>
@@ -232,7 +219,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
                         </ul>
                     </div>
 
-                    <!-- Tswira dyal l-5otwa 4 -->
                     <div class="timeline-media">
                         <div class="media-Browser-bar">
                             <span class="dot red"></span>
@@ -255,7 +241,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
         </div>
     </section>
 
-    <!-- 3. GUIDE DES STATUTS -->
     <section class="onboard-status-section">
         <div class="status-container">
             <h2>COMPRENDRE LES STATUTS DE VOTRE RÉSERVATION</h2>
@@ -283,7 +268,6 @@ if (file_exists(__DIR__ . '/includes/db.php')) {
         </div>
     </section>
 
-    <!-- 4. FAQ INTERACTIVE -->
     <section class="onboard-faq-section">
         <div class="faq-container">
             <h2>QUESTIONS FRÉQUENTES (FAQ)</h2>

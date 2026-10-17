@@ -15,7 +15,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                 $_SESSION['panier'] = [];
             }
 
-            // Nchofo ch7al mn merra had l'pack digha f l'panier
             $qte_deja_panier = 0;
             $index_existant = null;
             foreach ($_SESSION['panier'] as $index => $item) {
@@ -28,7 +27,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
 
             $nouvelle_qte = $qte_deja_panier + 1;
 
-            // Vérification dyal la capacité dyal ga3 les jeux li f l'pack
             $jeux_inclus = json_decode($promo['jeux_inclus'] ?? '{}', true);
             if (!is_array($jeux_inclus) || empty($jeux_inclus)) {
                 header("Location: ../../index.php?erreur=indisponible#section2");

@@ -31,7 +31,7 @@ require __DIR__ . '/admin/includes/db.php';
 
             <?php if ($nb_affiches > 0): ?>
                 <div class="affiche-slider" id="afficheSlider">
-                    <!-- L-piste li kat-scrolla -->
+                   
                     <div class="affiche-track" id="afficheTrack">
                         <?php foreach ($affiches as $aff): ?>
                             <div class="affiche-slide">
@@ -40,7 +40,6 @@ require __DIR__ . '/admin/includes/db.php';
                         <?php endforeach; ?>
                     </div>
 
-                    <!-- Ila kano ktr mn tswira w7da, nbiyyno Next > w Prev < -->
                     <?php if ($nb_affiches > 1): ?>
                         <button type="button" class="affiche-btn prev" id="btnPrevAffiche" aria-label="Précédent">
                             &#10094;
@@ -49,7 +48,6 @@ require __DIR__ . '/admin/includes/db.php';
                             &#10095;
                         </button>
 
-                        <!-- N9i6at (Dots) lte7t -->
                         <div class="affiche-dots" id="afficheDots">
                             <?php for ($i = 0; $i < $nb_affiches; $i++): ?>
                                 <span class="affiche-dot <?php echo ($i === 0) ? 'active' : ''; ?>" data-index="<?php echo $i; ?>"></span>
@@ -68,7 +66,6 @@ require __DIR__ . '/admin/includes/db.php';
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section class="section2" id="section2">
         <div class="tiket">
-            <!-- 1. L'menu dyal les catégories lfo9 (GROUPS, SPECIAL, JOURNE) -->
             <div class="tiket-header">
                 <ul class="tiket-tabs">
                     <li class="tiket-tab active" data-cat="GROUPS">GROUPS</li>
@@ -78,11 +75,9 @@ require __DIR__ . '/admin/includes/db.php';
                 <div class="tiket-divider"></div>
             </div>
 
-            <!-- 2. Les cartes dyal les tickets -->
             <div class="tiket-cards-container">
                 <?php
                 try {
-                    // Njibo ga3 les noms dyal les jeux mn table JEU bach nbiyynohom f Modal Détails
                     $jeux_map = [];
                     $stmt_j = $pdo->query("SELECT id_jeu, nom FROM JEU");
                     while ($row_j = $stmt_j->fetch(PDO::FETCH_ASSOC)) {
@@ -97,7 +92,6 @@ require __DIR__ . '/admin/includes/db.php';
                             $cat_actuelle = strtoupper(trim($promo['categorie_ticket']));
                             $displayStyle = ($cat_actuelle === 'GROUPS') ? 'display: flex;' : 'display: none;';
 
-                            // N7wlo jeux_inclus (JSON) l liste dyal smiyat l'al3ab bach tban f Détails
                             $jeux_inclus_arr = json_decode($promo['jeux_inclus'] ?? '{}', true);
                             $liste_jeux_details = [];
                             if (is_array($jeux_inclus_arr)) {
@@ -110,7 +104,6 @@ require __DIR__ . '/admin/includes/db.php';
                             ?>
                             <div class="tiket-card" data-cat="<?php echo htmlspecialchars($cat_actuelle); ?>" style="<?php echo $displayStyle; ?>">
                                 
-                                <!-- L'fo9 dyal l'carte : Date Fin f l'blasa li dwwrti 3liha bl 7mer + Titre -->
                                 <div class="tiket-card-top">
                                     <?php if (!empty($promo['date_fin'])): ?>
                                         <span class="tiket-date-fin-badge">
@@ -120,10 +113,8 @@ require __DIR__ . '/admin/includes/db.php';
                                     <h2><?php echo htmlspecialchars($promo['nom_promo']); ?></h2>
                                 </div>
 
-                                <!-- L'west dyal l'carte b les 3 icônes bleus -->
                                 <div class="tiket-card-body">
                                     
-                                    <!-- 1. Les catégories (Icône Grid + Loupe b zr9) -->
                                     <div class="tiket-info-row">
                                         <span class="tiket-circle">
                                             <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
@@ -137,7 +128,6 @@ require __DIR__ . '/admin/includes/db.php';
                                         <p><?php echo htmlspecialchars($promo['type_promo'] ?? 'CLASSIC + PS5'); ?></p>
                                     </div>
 
-                                    <!-- 2. Le délai (Icône Horloge b zr9) -->
                                     <div class="tiket-info-row">
                                         <span class="tiket-circle">
                                             <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
@@ -151,7 +141,6 @@ require __DIR__ . '/admin/includes/db.php';
                                         <p>VALIDITÉ : <?php echo htmlspecialchars($promo['delai'] ?? '24/H'); ?></p>
                                     </div>
 
-                                    <!-- 3. La capacité (Icône Profile b zr9) -->
                                     <div class="tiket-info-row">
                                         <span class="tiket-circle">
                                             <svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff">
@@ -164,7 +153,6 @@ require __DIR__ . '/admin/includes/db.php';
 
                                 </div>
 
-                                <!-- L'te7t dyal l'carte : Prix + Bouton DÉTAILS + Bouton ACHETER -->
                                 <div class="tiket-card-bottom">
                                     <div class="tiket-prix"><?php echo htmlspecialchars($promo['valeur']); ?> DH</div>
                                     <div class="tiket-actions">
@@ -193,7 +181,6 @@ require __DIR__ . '/admin/includes/db.php';
             </div>
         </div>
 
-        <!-- 3. Modal (Popup) dyal DÉTAILS -->
         <div id="ticketDetailsModal" class="ticket-modal-overlay" onclick="fermerModalDetails(event)">
             <div class="ticket-modal-box">
                 <span class="ticket-modal-close" onclick="document.getElementById('ticketDetailsModal').classList.remove('show')">&times;</span>
