@@ -34,7 +34,15 @@ function offre_flash(string $message): void {
 function offre_longueur(string $s): int { return preg_match_all("/./us", $s); }
 function offre_resume(string $s): string { $chars = preg_split("//u", $s, -1, PREG_SPLIT_NO_EMPTY) ?: []; return implode("", array_slice($chars, 0, 100)) . (count($chars) > 100 ? "…" : ""); }
 
+function affiche_url_valide(string $url): bool {
+    if (strlen($url) > 255 || !filter_var($url, FILTER_VALIDATE_URL)) return false;
+    $parts = parse_url($url);
+    return $parts && in_array(strtolower($parts['scheme'] ?? ''), ['http', 'https'], true)
+        && !isset($parts['user']) && !isset($parts['pass']);
+}
+
 function affiche_image(string $path): string {
+    if (affiche_url_valide($path)) return $path;
     if($path!=='' && preg_match('~^[a-zA-Z0-9_./-]+$~D',$path) && !in_array('..',explode('/',$path),true))return '../../'.$path;
     return '../assets/img/logo.png';
 }
