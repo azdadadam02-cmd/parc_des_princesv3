@@ -39,11 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     tabs.forEach(tab => {
         tab.addEventListener('click', function() {
-            // 1. N7iydo s-ster (active) mn ga3 les tabs w n3tiwh l hada li cliquina 3lih
             tabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
 
-            // 2. N-filtriw les cartes 3la 7sab l'catégorie
             const selectedCat = this.getAttribute('data-cat');
             cards.forEach(card => {
                 if (selectedCat === 'all' || card.getAttribute('data-cat') === selectedCat) {
@@ -57,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-        // 1. Filtre dyal les catégories (GROUPS, SPECIAL, JOURNE)
         const tabs = document.querySelectorAll('.tiket-tab');
         const cards = document.querySelectorAll('.tiket-card');
 
@@ -78,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // 2. Ila zad chi ticket (ajout=success), n7llo lih l'panier automatique bach ychofo!
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('ajout') === 'success') {
             const panier = document.getElementById('panierDropdown');
@@ -126,7 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const slides = track.querySelectorAll('.affiche-slide');
     const totalSlides = slides.length;
 
-    // Ila kant tswira w7da (wla 0), ma ndiro la scroll auto la next
     if (totalSlides <= 1) return;
 
     const btnNext = document.getElementById('btnNextAffiche');
@@ -137,7 +132,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let autoScrollTimer = null;
 
     function allerASlide(index) {
-        // Ila fat l-khera يرجع l-lowla (0), w ila rj3 9bel 0 يمشي l-khera
         currentIndex = (index + totalSlides) % totalSlides;
         track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
 
@@ -150,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
         arreterAutoScroll();
         autoScrollTimer = setInterval(function() {
             allerASlide(currentIndex + 1);
-        }, 5000); // 5 secondes
+        }, 5000); 
     }
 
     function arreterAutoScroll() {
@@ -159,15 +153,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Bouton Next >
     if (btnNext) {
         btnNext.addEventListener('click', function() {
             allerASlide(currentIndex + 1);
-            demarrerAutoScroll(); // N3awdo n-zeriw l-7sab dyal 5s mli ycliqui
+            demarrerAutoScroll(); 
         });
     }
 
-    // Bouton Prev <
     if (btnPrev) {
         btnPrev.addEventListener('click', function() {
             allerASlide(currentIndex - 1);
@@ -175,7 +167,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Clic 3la n-n9i6at lte7t
     dots.forEach(dot => {
         dot.addEventListener('click', function() {
             const idx = parseInt(this.getAttribute('data-index')) || 0;
@@ -184,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Nbdaw l-Auto-Scroll dyal 5s
     demarrerAutoScroll();
 });
  

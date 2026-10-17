@@ -279,7 +279,6 @@ body {
     justify-content: flex-start;
 }
 
-/* Header & Tabs (GROUPS, SPECIAL, JOURNE) */
 .tiket-header {
     width: 100%;
     margin-bottom: 35px;
@@ -319,7 +318,6 @@ body {
     background-color: #ffffff;
 }
 
-/* Container dyal les cartes */
 .tiket-cards-container {
     width: 100%;
     flex-grow: 1;
@@ -331,7 +329,6 @@ body {
     overflow-y: auto;
 }
 
-/* Design dyal kol carte */
 .tiket-card {
     width: 290px;
     border-radius: 35px;
@@ -347,8 +344,6 @@ body {
     box-shadow: 0 10px 40px rgba(255, 238, 0, 0.6);
 }
 
-/* Partie 1 : Titre lfo9 (Gris foncé) */
-/* Partie 1 : Titre lfo9 (Gris foncé) + Badge Date Fin */
 .tiket-card-top {
     position: relative;
     background-color: #8c8c8c;
@@ -384,7 +379,6 @@ body {
     letter-spacing: 1px;
 }
 
-/* Partie 2 : Les attributs f l'west (Gris clair) */
 .tiket-card-body {
     background-color: #d6d6d6;
     padding: 25px 20px;
@@ -399,7 +393,6 @@ body {
     gap: 15px;
 }
 
-/* Dawa2ir b zr9 m3a les icônes SVG f l'west */
 .tiket-circle {
     width: 40px;
     height: 40px;
@@ -424,7 +417,6 @@ body {
     line-height: 1.3;
 }
 
-/* Partie 3 : Prix w Les 2 Boutons lte7t (Blanc) */
 .tiket-card-bottom {
     background-color: #ffffff;
     padding: 15px 20px 22px 20px;
@@ -449,7 +441,6 @@ body {
     justify-content: space-between;
     gap: 10px;
 }
-/* Filtre K7el dyal Ticket Indisponible (B7al PS5 Salle) */
 .tiket-card {
     position: relative;
 }
@@ -547,7 +538,6 @@ body {
     transform: scale(1.05);
 }
 
-/* Modal Popup dyal DÉTAILS */
 .ticket-modal-overlay {
     display: none;
     position: fixed;

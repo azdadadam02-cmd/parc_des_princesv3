@@ -85,8 +85,6 @@ try {
 
     foreach ($_SESSION['panier'] as $cle => $ticket) {
         $quantite = max(1, (int)($ticket['quantite'] ?? 1));
-
-        // CAS 1 : Ila kan Ticket Promotion (Pack)
         if (isset($ticket['id_promo']) && (int)$ticket['id_promo'] > 0) {
             $id_promo = (int)$ticket['id_promo'];
 
@@ -104,8 +102,6 @@ try {
 
             $prix_pack = (float)$promo_db['valeur'];
             $cap_membres = max(1, (int)$promo_db['capacite_membres']);
-
-            // L'montant total kayb9a howa taman l'pack bla ma ytbdl!
             $montant += $prix_pack * $quantite;
             $nb_personnes += $cap_membres * $quantite;
 
@@ -121,8 +117,6 @@ try {
                 if ($qte_totale_jeu <= 0) {
                     continue;
                 }
-
-                // Njibo hta tarif l-asli dyal lo3ba mn table JEU
                 $st_jeu = $pdo->prepare("SELECT nom, tarif, capacite FROM jeu WHERE id_jeu = ? FOR UPDATE");
                 $st_jeu->execute([$id_j]);
                 $jeu_info = $st_jeu->fetch(PDO::FETCH_ASSOC);
@@ -131,11 +125,9 @@ try {
                     throw new RuntimeException("Stock épuisé pour le jeu : " . ($jeu_info['nom'] ?? ('#' . $id_j)));
                 }
 
-                // N9sso la capacité mn table JEU
                 $pdo->prepare("UPDATE jeu SET capacite = capacite - ? WHERE id_jeu = ?")
                     ->execute([$qte_totale_jeu, $id_j]);
 
-                // N7tto tarif l-asli dyal lo3ba f choisir bach l-client ychof ch7al katdir kol lo3ba
                 $tarif_jeu_reel = (float)$jeu_info['tarif'];
 
                 $lignes[] = [
@@ -145,7 +137,6 @@ try {
                 ];
             }
         } 
-        // CAS 2 : Ila kan Jeu 3adi
         else {
             $id_jeu = isset($ticket['id_jeu']) ? (int)$ticket['id_jeu'] : (isset($ticket['id']) ? (int)$ticket['id'] : 0);
 
@@ -220,7 +211,6 @@ try {
 
     $num_reservation = (int)$pdo->lastInsertId();
 
-    // Njm3o les jeux ila t3awdo f l'panier m3a l-7ifad 3la tarif l-asli dyalhom
     $lignes_groupees = [];
     foreach ($lignes as [$id_jeu, $quantite, $prix_unitaire]) {
         if (!isset($lignes_groupees[$id_jeu])) {

@@ -9,7 +9,6 @@ body {
     overflow-x: hidden;
 }
 
-/* 1. HERO HEADER */
 .onboard-hero {
     padding: 150px 20px 80px 20px;
     text-align: center;
@@ -106,7 +105,6 @@ body {
     box-shadow: 0 0 15px rgba(90, 85, 255, 0.6);
 }
 
-/* 2. VERTICAL TIMELINE */
 .onboard-timeline-section {
     padding: 80px 5%;
     position: relative;
@@ -118,7 +116,6 @@ body {
     position: relative;
 }
 
-/* Khet zamani l-westani */
 .timeline-container::before {
     content: '';
     position: absolute;
@@ -233,7 +230,6 @@ body {
     margin-top: 2px;
 }
 
-/* Box rassurant pour le statut en attente */
 .status-reassurance-box {
     background: linear-gradient(135deg, rgba(255, 77, 77, 0.14), rgba(90, 85, 255, 0.14));
     border: 1px solid #ff4d4d;
@@ -269,7 +265,6 @@ body {
     text-transform: uppercase;
 }
 
-/* Cadre Image (Media Frame) */
 .timeline-media {
     background: #0c0920;
     border: 1px solid rgba(90, 85, 255, 0.45);
@@ -356,7 +351,6 @@ body {
     color: #9a9ab8;
 }
 
-/* 3. SECTION STATUTS */
 .onboard-status-section {
     padding: 60px 5%;
     background: rgba(8, 6, 26, 0.65);
@@ -443,7 +437,6 @@ body {
     margin: 0;
 }
 
-/* 4. SECTION FAQ */
 .onboard-faq-section {
     padding: 70px 5% 90px 5%;
 }
@@ -530,7 +523,6 @@ body {
     letter-spacing: 1px;
 }
 
-/* Responsive */
 @media (max-width: 900px) {
     .timeline-content {
         grid-template-columns: 1fr;
