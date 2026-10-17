@@ -55,3 +55,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+        // 1. Filtre dyal les catégories (GROUPS, SPECIAL, JOURNE)
+        const tabs = document.querySelectorAll('.tiket-tab');
+        const cards = document.querySelectorAll('.tiket-card');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const selectedCat = this.getAttribute('data-cat').trim().toUpperCase();
+                cards.forEach(card => {
+                    const cardCat = (card.getAttribute('data-cat') || '').trim().toUpperCase();
+                    if (cardCat === selectedCat) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 2. Ila zad chi ticket (ajout=success), n7llo lih l'panier automatique bach ychofo!
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('ajout') === 'success') {
+            const panier = document.getElementById('panierDropdown');
+            if (panier) {
+                panier.classList.add('show');
+            }
+        }
+    });
+    function ouvrirModalDetails(btn) {
+    const titre = btn.getAttribute('data-titre');
+    const desc = btn.getAttribute('data-desc');
+    const jeuxStr = btn.getAttribute('data-jeux');
+
+    document.getElementById('modalTicketTitre').textContent = titre;
+    document.getElementById('modalTicketDesc').textContent = desc;
+
+    const ul = document.getElementById('modalTicketJeux');
+    ul.innerHTML = '';
+
+    if (jeuxStr && jeuxStr.trim() !== '') {
+        const jeuxArr = jeuxStr.split('|');
+        jeuxArr.forEach(j => {
+            const li = document.createElement('li');
+            li.textContent = j;
+            ul.appendChild(li);
+        });
+    } else {
+        const li = document.createElement('li');
+        li.textContent = 'Accès libre aux jeux de la catégorie';
+        ul.appendChild(li);
+    }
+
+    document.getElementById('ticketDetailsModal').classList.add('show');
+}
+
+function fermerModalDetails(event) {
+    if (event.target.id === 'ticketDetailsModal') {
+        document.getElementById('ticketDetailsModal').classList.remove('show');
+    }
+}
+ 
