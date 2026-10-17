@@ -1,0 +1,541 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #070935 0%, #12092e 50%, #240833 100%);
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+}
+
+/* 1. HERO HEADER */
+.onboard-hero {
+    padding: 150px 20px 80px 20px;
+    text-align: center;
+    background: radial-gradient(circle at center, rgba(90, 85, 255, 0.22) 0%, transparent 70%);
+    border-bottom: 1px solid rgba(90, 85, 255, 0.25);
+}
+
+.onboard-hero-content {
+    max-width: 820px;
+    margin: 0 auto;
+}
+
+.onboard-badge {
+    display: inline-block;
+    background: rgba(90, 85, 255, 0.2);
+    border: 1px solid #5a55ff;
+    color: #00d2ff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 18px;
+    border-radius: 50px;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+}
+
+.onboard-hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 62px;
+    letter-spacing: 2px;
+    margin: 0 0 15px 0;
+    line-height: 1.05;
+}
+
+.onboard-hero h1 span {
+    color: #00d2ff;
+    text-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+}
+
+.onboard-hero p {
+    font-size: 16px;
+    color: #d0d0e8;
+    line-height: 1.6;
+    margin: 0 auto 30px auto;
+    max-width: 680px;
+}
+
+.onboard-hero-btns {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.btn-onboard-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #5a55ff, #3f3bc2);
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 50px;
+    box-shadow: 0 6px 20px rgba(90, 85, 255, 0.45);
+    transition: all 0.3s ease;
+}
+
+.btn-onboard-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 210, 255, 0.55);
+    background: linear-gradient(135deg, #007bff, #5a55ff);
+}
+
+.btn-onboard-outline {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    color: #ffffff;
+    border: 2px solid #5a55ff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.btn-onboard-outline:hover {
+    background: #5a55ff;
+    box-shadow: 0 0 15px rgba(90, 85, 255, 0.6);
+}
+
+/* 2. VERTICAL TIMELINE */
+.onboard-timeline-section {
+    padding: 80px 5%;
+    position: relative;
+}
+
+.timeline-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Khet zamani l-westani */
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 28px;
+    width: 3px;
+    background: linear-gradient(to bottom, #00d2ff, #5a55ff, #ff0055);
+    border-radius: 3px;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 85px;
+    margin-bottom: 85px;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 4px;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff, #5a55ff);
+    border: 3px solid #ffffff;
+    color: #ffffff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(90, 85, 255, 0.8);
+    z-index: 2;
+}
+
+.timeline-content {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 40px;
+    align-items: center;
+    background: rgba(20, 14, 54, 0.78);
+    border: 1px solid rgba(90, 85, 255, 0.35);
+    border-radius: 24px;
+    padding: 35px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.timeline-content.reverse {
+    grid-template-columns: 1.05fr 0.95fr;
+}
+
+.step-tag {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: #00d2ff;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+.step-tag-alert {
+    color: #ff4d6d;
+}
+
+.timeline-text h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    margin: 0 0 12px 0;
+    letter-spacing: 1px;
+    color: #ffffff;
+}
+
+.timeline-text p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #d2d2e8;
+    margin: 0 0 20px 0;
+}
+
+.step-highlights {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.step-highlights li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border-left: 3px solid #5a55ff;
+    padding: 12px 15px;
+    border-radius: 0 12px 12px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #e4e4f5;
+}
+
+.step-highlights li i {
+    color: #00d2ff;
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+/* Box rassurant pour le statut en attente */
+.status-reassurance-box {
+    background: linear-gradient(135deg, rgba(255, 77, 77, 0.14), rgba(90, 85, 255, 0.14));
+    border: 1px solid #ff4d4d;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+}
+
+.status-reassurance-box h4 {
+    margin: 0 0 6px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #ff9f43;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-reassurance-box p {
+    margin: 0;
+    font-size: 13px;
+    color: #f1f1f1;
+}
+
+.badge-inline-attente {
+    background: rgba(255, 77, 77, 0.25);
+    border: 1px solid #ff4d4d;
+    color: #ff6b6b;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+/* Cadre Image (Media Frame) */
+.timeline-media {
+    background: #0c0920;
+    border: 1px solid rgba(90, 85, 255, 0.45);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+}
+
+.media-Browser-bar {
+    background: #191338;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.media-Browser-bar .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot.red { background: #ff5f56; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #27c93f; }
+
+.browser-title {
+    margin-left: 8px;
+    font-size: 11px;
+    color: #a5a5c7;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.media-frame {
+    width: 100%;
+    min-height: 250px;
+    max-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.media-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.timeline-media:hover .media-frame img {
+    transform: scale(1.03);
+}
+
+.media-fallback {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 35px 20px;
+    color: #b3b1ff;
+    gap: 10px;
+}
+
+.media-fallback i {
+    font-size: 46px;
+    color: #00d2ff;
+    margin-bottom: 5px;
+}
+
+.media-fallback span {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.media-fallback small {
+    font-size: 11px;
+    color: #9a9ab8;
+}
+
+/* 3. SECTION STATUTS */
+.onboard-status-section {
+    padding: 60px 5%;
+    background: rgba(8, 6, 26, 0.65);
+    border-top: 1px solid rgba(90, 85, 255, 0.2);
+    border-bottom: 1px solid rgba(90, 85, 255, 0.2);
+    text-align: center;
+}
+
+.status-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.status-container h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    letter-spacing: 1.5px;
+    margin: 0 0 8px 0;
+}
+
+.status-subtitle {
+    color: #b8b8d4;
+    font-size: 14px;
+    margin-bottom: 40px;
+}
+
+.status-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.status-card {
+    background: rgba(23, 11, 59, 0.85);
+    border: 1px solid rgba(90, 85, 255, 0.35);
+    border-radius: 20px;
+    padding: 28px 24px;
+    text-align: left;
+    transition: transform 0.3s ease;
+}
+
+.status-card:hover {
+    transform: translateY(-6px);
+}
+
+.status-pill {
+    display: inline-block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 5px 14px;
+    border-radius: 30px;
+    margin-bottom: 15px;
+}
+
+.status-pill.attente {
+    background: rgba(255, 77, 77, 0.18);
+    border: 1px solid #ff4d4d;
+    color: #ff6b6b;
+}
+
+.status-pill.valide {
+    background: rgba(16, 172, 132, 0.2);
+    border: 1px solid #10ac84;
+    color: #1dd1a1;
+}
+
+.status-pill.indispo {
+    background: rgba(158, 158, 158, 0.2);
+    border: 1px solid #888888;
+    color: #cccccc;
+}
+
+.status-card h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    margin: 0 0 10px 0;
+}
+
+.status-card p {
+    font-size: 13px;
+    color: #cccce0;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* 4. SECTION FAQ */
+.onboard-faq-section {
+    padding: 70px 5% 90px 5%;
+}
+
+.faq-container {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.faq-container h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    text-align: center;
+    letter-spacing: 1.5px;
+    margin: 0 0 35px 0;
+}
+
+.faq-item {
+    background: rgba(20, 14, 54, 0.8);
+    border: 1px solid rgba(90, 85, 255, 0.35);
+    border-radius: 14px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.faq-question {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 18px 22px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.faq-question i {
+    color: #00d2ff;
+    transition: transform 0.3s ease;
+}
+
+.faq-item.open .faq-question i {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    background: rgba(10, 7, 30, 0.6);
+}
+
+.faq-item.open .faq-answer {
+    max-height: 250px;
+}
+
+.faq-answer p {
+    margin: 0;
+    padding: 16px 22px 20px 22px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #d4d4eb;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.onboard-cta-bottom {
+    margin-top: 50px;
+    text-align: center;
+    padding: 35px;
+    background: linear-gradient(135deg, rgba(90, 85, 255, 0.2), rgba(0, 210, 255, 0.12));
+    border: 1px solid rgba(90, 85, 255, 0.45);
+    border-radius: 20px;
+}
+
+.onboard-cta-bottom h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    margin: 0 0 15px 0;
+    letter-spacing: 1px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .timeline-content {
+        grid-template-columns: 1fr;
+    }
+    .onboard-hero h1 {
+        font-size: 44px;
+    }
+}
