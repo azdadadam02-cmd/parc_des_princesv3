@@ -9,7 +9,7 @@
                     <p id="modalDesc" class="desc-text">...</p>
                     <div class="info-grid">
                         <div class="info-item"><i class="fas fa-clock"></i> <span><span id="modalDuree">0</span> min</span></div>
-                        <div class="info-item"><i class="fas fa-coins"></i> <span><span id="modalTarif">0</span> MAD</span></div>
+                        <div class="info-item"><i class="fas fa-coins"></i> <span class="jeu-prix" aria-live="polite"><del id="modalAncienTarif" hidden></del><span><span id="modalTarif">0</span> MAD</span></span></div>
                         <div class="info-item"><i class="fas fa-user-check"></i> <span>+<span id="modalAge">0</span> ans</span></div>
                         <div class="info-item"><i class="fas fa-users"></i> <span>Max <span id="modalCapaciteText">0</span> pers.</span></div>
                     </div>

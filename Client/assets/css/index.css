@@ -1059,3 +1059,8 @@ body {
 .notif-list::-webkit-scrollbar-thumb:hover {
     background: #ff4d4d;
 }
+
+/* Prix réduit dans la fenêtre du jeu. */
+#gameModal .jeu-prix{display:flex;flex-direction:column;align-items:flex-start;gap:3px;line-height:1.25}
+#gameModal .jeu-prix del{color:#777784;font-size:.75em;font-weight:400;text-decoration:line-through}
+#gameModal .jeu-prix del[hidden]{display:none}

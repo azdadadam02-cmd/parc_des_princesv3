@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../offres/_commun.php';
 
 
 $message = "";
@@ -55,6 +56,13 @@ $responsables =
 // ===========================
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $tarif_promo = is_string($_POST['tarif_promo'] ?? null) ? str_replace(',', '.', trim($_POST['tarif_promo'])) : '';
+    $tarif_normal = is_string($_POST['tarif'] ?? null) ? str_replace(',', '.', trim($_POST['tarif'])) : '';
+    $erreur_tarif = '';
+    if (!offre_csrf_valide()) $erreur_tarif = 'Formulaire expiré. Rechargez la page.';
+    elseif (!preg_match('/^\d{1,8}(\.\d{1,2})?$/D', $tarif_normal)) $erreur_tarif = 'Tarif normal invalide.';
+    elseif ($tarif_promo !== '' && (!preg_match('/^\d{1,8}(\.\d{1,2})?$/D', $tarif_promo) || (float)$tarif_promo >= (float)$tarif_normal)) $erreur_tarif = 'Le prix promotionnel doit être positif ou nul et inférieur au tarif normal.';
+
 
     $nom =
         trim($_POST['nom']);
@@ -72,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_POST['duree_session'];
 
     $tarif =
-        $_POST['tarif'];
+        $tarif_normal;
 
     $etat =
         $_POST['etat'];
@@ -92,7 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         : null;
 
 
-    if (
+    if ($erreur_tarif !== '') {
+        $error = $erreur_tarif;
+    } elseif (
     empty($nom) ||
     $capacite === '' ||
     $tarif === '' ||
@@ -101,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $error = "Veuillez remplir les champs obligatoires et choisir une catégorie.";
 
-    } elseif (mb_strlen($nom) < 2) {
+    } elseif (offre_longueur($nom) < 2) {
 
         $error = "Le nom du jeu doit contenir au moins 2 caractères.";
 
@@ -206,6 +216,7 @@ if (empty($error)) {
                 capacite,
                 duree_session,
                 tarif,
+                tarif_promo,
                 etat,
                 date_mise_service,
                 id_categorie,
@@ -222,6 +233,7 @@ if (empty($error)) {
                 :capacite,
                 :duree_session,
                 :tarif,
+                :tarif_promo,
                 :etat,
                 :date_mise_service,
                 :id_categorie,
@@ -256,6 +268,7 @@ if (empty($error)) {
 
             ':tarif' =>
                 $tarif,
+            ':tarif_promo' => $tarif_promo === '' ? null : $tarif_promo,
 
             ':etat' =>
                 $etat,
@@ -352,7 +365,7 @@ if (empty($error)) {
         <?php endif; ?>
 
 
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data"><input type="hidden" name="csrf" value="<?= offre_h(offre_token()) ?>">
 
 
             <div class="form-grid">
@@ -471,6 +484,12 @@ if (empty($error)) {
 
                 </div>
 
+
+                <div class="form-group">
+                    <label for="tarif_promo">Prix promotionnel (DH)</label>
+                    <input id="tarif_promo" type="number" name="tarif_promo" min="0" max="99999999.99" step="0.01" value="<?= offre_h(($_POST['tarif_promo'] ?? '')) ?>">
+                    <small>Laissez vide pour retirer la promotion. Le tarif normal est conservé.</small>
+                </div>
 
                 <div class="form-group">
 

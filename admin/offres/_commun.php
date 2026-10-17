@@ -16,14 +16,14 @@ function offre_date_valide(string $value): bool {
 }
 function offre_id(): int {
     $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    if (!$id || $id < 1) { http_response_code(404); exit('Offre introuvable.'); }
+    if (!$id || $id < 1) { http_response_code(404); exit('Affiche introuvable.'); }
     return $id;
 }
 function offre_lire(PDO $pdo, int $id): array {
-    $stmt = $pdo->prepare('SELECT * FROM offre WHERE id_offre = ?');
+    $stmt = $pdo->prepare('SELECT * FROM affiche WHERE id_affiche = ?');
     $stmt->execute([$id]);
     $offre = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (!$offre) { http_response_code(404); exit('Offre introuvable.'); }
+    if (!$offre) { http_response_code(404); exit('Affiche introuvable.'); }
     return $offre;
 }
 function offre_flash(string $message): void {
@@ -33,3 +33,8 @@ function offre_flash(string $message): void {
 
 function offre_longueur(string $s): int { return preg_match_all("/./us", $s); }
 function offre_resume(string $s): string { $chars = preg_split("//u", $s, -1, PREG_SPLIT_NO_EMPTY) ?: []; return implode("", array_slice($chars, 0, 100)) . (count($chars) > 100 ? "…" : ""); }
+
+function affiche_image(string $path): string {
+    if($path!=='' && preg_match('~^[a-zA-Z0-9_./-]+$~D',$path) && !in_array('..',explode('/',$path),true))return '../../'.$path;
+    return '../assets/img/logo.png';
+}

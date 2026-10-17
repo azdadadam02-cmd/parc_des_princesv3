@@ -38,7 +38,7 @@ elseif ($type === 'reservation') {
     $stmt->execute([$id, $email_client]);
     $details = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    $stmt_t = $pdo->prepare("SELECT j.nom, 1 as quantite, j.tarif as prix_unitaire, j.tarif as sous_total 
+    $stmt_t = $pdo->prepare("SELECT j.nom, c.quantite, c.prix_unitaire, (c.quantite * c.prix_unitaire) as sous_total 
                              FROM choisir c 
                              JOIN JEU j ON c.id_jeu = j.id_jeu 
                              WHERE c.num_reservation = ?");

@@ -13,8 +13,8 @@ $adminLinks = [
     ['signalements', 'Signalements CIN', 'M12 3L2 21h20z M12 9v5 M12 17h.01'],
     ['reservations', 'Réservations', 'M3 5h18v16H3z M7 3v4 M17 3v4 M3 11h18 M7 15h3 M14 15h3'],
     ['Ventes', 'Ventes', 'M3 3v18h18 M7 15l4-5 4 3 6-8'],
-    ['promotions', 'Tickets promotionnels', 'M3 7h18v12H3z M15 7v12'],
-    ['offres', 'Annonces / Offres', 'M3 3h8l10 10-8 8L3 11z M7 7h.01'],
+    ['promotions', 'Gestion des tickets', 'M3 7h18v12H3z M15 7v12'],
+    ['offres', 'Affiches accueil', 'M3 3h8l10 10-8 8L3 11z M7 7h.01'],
     ['billets', 'Billets', 'M3 7h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4z M15 7v3 M15 12v2 M15 16v3'],
     ['depenses', 'Dépenses', 'M4 3h16v18l-4-2-4 2-4-2-4 2z M8 8h8 M8 12h8 M8 16h4'],
     ['maintenance', 'Maintenance', 'M14 6a5 5 0 0 0-6 6l-5 5a3 3 0 0 0 4 4l5-5a5 5 0 0 0 6-6l-4 3-3-3z']
