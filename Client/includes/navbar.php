@@ -65,7 +65,7 @@ if(isset($_SESSION['user_email'])) {
     <nav class="navbar">
         <a href="<?php echo $ROOT_URL; ?>/index.php">Accueil</a>
         <a href="https://maps.app.goo.gl/i5cZtAKhvjNpBfdm9" target="_blank" >localisation</a>
-        <a href="<?php echo $CLIENT_URL; ?>/User_Onboarding.php">Aide</a>
+        <a href="<?php echo $CLIENT_URL; ?>/User_Onboarding.php" target="_blank">Aide</a>
         
         <?php if(isset($_SESSION['user_email'])): ?>
             <a href="<?php echo $CLIENT_URL; ?>/actions/logout.php" style="color: #ff4d4d;">Déconnexion</a>
