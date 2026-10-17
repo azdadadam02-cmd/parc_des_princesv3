@@ -126,13 +126,12 @@ entete("Dashboard", false);
 <div class="row">
     <div class="col-12">
         <h1 class="page-title">Dashboard financier</h1>
-        <p class="subtitle">Recettes, dépenses (consultation) et bénéfice net<?= ($du || $au) ? ' de la période sélectionnée' : ' (toutes périodes)' ?>.</p>
     </div>
 </div>
 
 <?php if ($erreurs): ?>
 <div class="row"><div class="col-12"><div class="alert alert-danger">
-    <?php foreach ($erreurs as $e): ?><div>❌ <?= h($e) ?></div><?php endforeach; ?>
+    <?php foreach ($erreurs as $e): ?><div><?= h($e) ?></div><?php endforeach; ?>
 </div></div></div>
 <?php endif; ?>
 
@@ -175,7 +174,7 @@ entete("Dashboard", false);
         <h3 class="card-title">Billetterie</h3>
         <div class="card">
             <p class="text-muted">Consulter, rechercher ou réimprimer les billets, et contrôler un billet à l'entrée.</p>
-            <div class="page-actions"><a class="btn btn-primary" href="tous_billets.php">🎟 Liste des billets</a><a class="btn btn-ghost" href="billets.php">Vérifier un billet</a></div>
+            <div class="page-actions"><a class="btn btn-primary" href="tous_billets.php">Liste des billets</a><a class="btn btn-ghost" href="billets.php">Vérifier un billet</a></div>
         </div>
     </div>
 </div>
@@ -193,14 +192,14 @@ entete("Dashboard", false);
 
 <div class="row mt-1">
     <div class="col-12">
-        <h3 class="card-title">Recettes vs dépenses (par <?= $par_jour ? 'jour' : 'mois' ?>)</h3>
+        <h3 class="card-title">Recettes vs dépenses par <?= $par_jour ? 'jour' : 'mois' ?></h3>
         <div class="card"><div style="position:relative;height:340px"><canvas id="chart-periode"></canvas></div></div>
     </div>
 </div>
 
 <div class="row mt-1">
     <div class="col-12">
-        <h3 class="card-title">Dépenses (consultation)</h3>
+        <h3 class="card-title">Dépenses </h3>
         <div class="table-wrap">
             <table class="table">
                 <thead><tr><th>Date</th><th>Catégorie</th><th>Description</th><th>Jeu</th><th class="num">Montant</th></tr></thead>

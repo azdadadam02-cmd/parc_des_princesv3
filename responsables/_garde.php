@@ -118,12 +118,12 @@ function entete(string $titre, bool $afficherTitre = true): void {
         <div class="row align-center">
 
             <!-- Logo -->
-            <div class="col-6 col-lg-3">
+            <div class="col-6 col-lg-auto">
                  <img src="assets/logo.png" alt="Parc des Prince" class="site-logo">
             </div>
 
             <!-- Navigation (sous le logo sur mobile, au centre sur PC) -->
-            <div class="col-12 col-lg-6 order-3 order-lg-2">
+            <div class="col-12 col-lg order-3 order-lg-2">
                 <nav class="nav-pill">
                     <?php foreach ($liens as $url => $nom): ?>
                         <a href="<?= $url ?>" class="<?= $page === $url ? 'active' : '' ?>"><?= h($nom) ?></a>
@@ -132,8 +132,14 @@ function entete(string $titre, bool $afficherTitre = true): void {
             </div>
 
             <!-- Compte -->
-            <div class="col-6 col-lg-3 order-2 order-lg-3 text-end">
-                <a href="../logout.php" class="user-badge" title="Se déconnecter">👤 <?= h($email) ?></a>
+            <div class="col-6 col-lg-auto order-2 order-lg-3 text-end">
+                <div class="header-account">
+                    <div class="profile-box" title="<?= h($email) ?>">
+                        <span class="profile-circle"><?= h(strtoupper(substr($email, 0, 1))) ?></span>
+                        <span class="profile-email"><?= h($email) ?></span>
+                    </div>
+                    <a href="../logout.php" class="logout-btn">Déconnexion</a>
+                </div>
             </div>
 
         </div>

@@ -60,7 +60,7 @@ entete("Commandes", false);
         <h1 class="page-title">Commandes</h1>
         <p class="subtitle">Réservations en ligne validées et ventes directes au guichet. Le billet s'ouvre automatiquement après l'encaissement.</p>
     </div>
-    <div class="col-12 col-md-auto"><a href="vente.php" class="btn btn-primary">➕ Nouvelle vente directe</a></div>
+    <div class="col-12 col-md-auto"><a href="vente.php" class="btn btn-primary">Nouvelle vente directe</a></div>
 </div>
 
 <?php if ($erreur): ?><div class="row"><div class="col-12"><div class="alert alert-danger"><?= h($erreur) ?></div></div></div><?php endif; ?>
@@ -107,7 +107,7 @@ entete("Commandes", false);
                     <button type="submit" class="btn btn-primary btn-sm">Valider &amp; payer</button>
                 </form>
             <?php elseif ($s === 'payée'): ?>
-                <a class="btn btn-outline btn-sm" href="Billet.php?id=<?= (int)$c['num_commande'] ?>">🎟 Billet</a>
+                <a class="btn btn-outline btn-sm" href="Billet.php?id=<?= (int)$c['num_commande'] ?>">Billet</a>
             <?php else: ?>
                 <span class="text-muted">—</span>
             <?php endif; ?>

@@ -23,7 +23,7 @@ if ($id) {
 if (!$cmd) {
     http_response_code(404);
     entete("Billet introuvable", false);
-    echo '<div class="row"><div class="col-12"><div class="empty-state"><span class="empty-icon">🎟</span>'
+    echo '<div class="row"><div class="col-12"><div class="empty-state"><span class="empty-icon">' . icone('billet') . '</span>'
        . '<h3>Billet indisponible</h3><p>Cette commande n\'existe pas ou n\'est pas encore payée.</p>'
        . '<a class="btn btn-primary" href="commandes.php">Retour aux commandes</a></div></div></div>';
     pied();
@@ -44,12 +44,23 @@ $est_passage = ($cmd['email_client'] === EMAIL_VISITEUR);
 $nom_client  = $est_passage ? 'Visiteur de passage' : trim($cmd['prenom'] . ' ' . $cmd['nom']);
 $date_visite = $cmd['date_visite'] ?: ($billets[0]['date_creation'] ?? $cmd['date_commande']);
 
+// Date de paiement : on prend la première date valide parmi
+// date_paiement -> date_commande -> date de création du 1er billet.
+// (une date vide ou "0000-00-00" est ignorée)
+$date_paiement = null;
+foreach ([$cmd['date_paiement'] ?? null, $cmd['date_commande'] ?? null, $billets[0]['date_creation'] ?? null] as $d) {
+    if ($d && strpos((string)$d, '0000-00-00') !== 0 && strtotime((string)$d)) {
+        $date_paiement = $d;
+        break;
+    }
+}
+
 entete("Billet — commande n° " . $cmd['num_commande'], false);
 ?>
 
 <?php if (!empty($_GET['ok'])): ?>
 <div class="row no-print"><div class="col-12">
-    <div class="alert alert-success">✅ Paiement enregistré. Imprimez le billet et remettez-le au client.</div>
+    <div class="alert alert-success">Paiement enregistré. Imprimez le billet et remettez-le au client.</div>
 </div></div>
 <?php endif; ?>
 
@@ -59,8 +70,8 @@ entete("Billet — commande n° " . $cmd['num_commande'], false);
 
             <div class="row align-center justify-between">
                 <div class="col-12 col-md">
-                    <h1 class="page-title">Billet — commande n° <?= (int)$cmd['num_commande'] ?></h1>
-                    <p class="subtitle">Parc des Princes — payé le <?= h(date_fr($cmd['date_paiement'] ?: $cmd['date_commande'], true)) ?></p>
+                    <h1 class="page-title">Billet commande n° <?= (int)$cmd['num_commande'] ?></h1>
+                    <p class="subtitle">Parc des Princes  payé le <?= h(date_fr($date_paiement, true)) ?></p>
                 </div>
                 <div class="col-12 col-md-auto"><span class="status is-ok">Payée</span></div>
             </div>
@@ -69,7 +80,7 @@ entete("Billet — commande n° " . $cmd['num_commande'], false);
                 <div class="col-12 col-md-3"><div class="box"><span class="box-label">Client</span><span class="box-value"><?= h($nom_client) ?></span></div></div>
                 <div class="col-12 col-md-3"><div class="box"><span class="box-label">Téléphone</span><span class="box-value"><?= h($cmd['telephone'] ?: '—') ?></span></div></div>
                 <div class="col-12 col-md-3"><div class="box"><span class="box-label">Date de visite</span><span class="box-value"><?= h(date_fr($date_visite)) ?></span></div></div>
-                <div class="col-12 col-md-3"><div class="box"><span class="box-label">Payée le</span><span class="box-value"><?= h(date_fr($cmd['date_paiement'] ?? null, true)) ?></span></div></div>
+                <div class="col-12 col-md-3"><div class="box"><span class="box-label">Payée le</span><span class="box-value"><?= h(date_fr($date_paiement, true)) ?></span></div></div>
             </div>
 
             <div class="row">
@@ -89,7 +100,7 @@ entete("Billet — commande n° " . $cmd['num_commande'], false);
                             <?php endforeach; ?>
                             </tbody>
                             <tfoot><tr>
-                                <td colspan="4">Total payé (<?= count($billets) ?> billet<?= count($billets) > 1 ? 's' : '' ?>)</td>
+                                <td colspan="4">Total payé <?= count($billets) ?> billet<?= count($billets) > 1 ? 's' : '' ?></td>
                                 <td class="num"><?= dh($cmd['montant_total']) ?></td>
                             </tr></tfoot>
                         </table>
@@ -98,7 +109,7 @@ entete("Billet — commande n° " . $cmd['num_commande'], false);
             </div>
 
             <div class="row no-print"><div class="col-12"><div class="page-actions">
-                <button type="button" class="btn btn-outline" onclick="window.print()">🖨 Imprimer</button>
+                <button type="button" class="btn btn-outline" onclick="window.print()">Imprimer</button>
                 <a href="vente.php" class="btn btn-primary">Nouvelle vente</a>
                 <a href="commandes.php" class="btn btn-ghost">Commandes</a>
             </div></div></div>
@@ -108,3 +119,4 @@ entete("Billet — commande n° " . $cmd['num_commande'], false);
 </div>
 
 <?php pied(); ?>
+ 
