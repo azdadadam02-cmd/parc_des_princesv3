@@ -111,11 +111,11 @@ entete("Mes jeux", false);
                         <div class="col-6">
                             <span class="metric-label">Capacité</span>
                             <!-- (int) = n-ta2kdo bli rqm s7i7 -->
-                            <span class="metric-value">👥 <?= (int)$jeu['capacite'] ?> pers.</span>
+                            <span class="metric-value"> <?= (int)$jeu['capacite'] ?> pers.</span>
                         </div>
                         <div class="col-6">
                             <span class="metric-label">Durée</span>
-                            <span class="metric-value">⏱️ <?= (int)$jeu['duree_session'] ?> min</span>
+                            <span class="metric-value">⏱ <?= (int)$jeu['duree_session'] ?> min</span>
                         </div>
                     </div>
                 </div>

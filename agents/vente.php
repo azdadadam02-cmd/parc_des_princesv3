@@ -1,4 +1,6 @@
-﻿<?php
+﻿
+Vente · PHP
+<?php
 // ============================================================
 // NOUVELLE VENTE DE BILLETS
 // - le montant est TOUJOURS recalculé côté serveur (le JS n'est qu'un aperçu)
@@ -259,7 +261,7 @@ entete("Nouvelle vente", false);
 <?php if ($erreurs): ?>
 <div class="row"><div class="col-12">
     <div class="alert alert-danger">
-        <?php foreach ($erreurs as $e): ?><div>❌ <?= h($e) ?></div><?php endforeach; ?>
+        <?php foreach ($erreurs as $e): ?><div><?= h($e) ?></div><?php endforeach; ?>
     </div>
 </div></div>
 <?php endif; ?>
@@ -277,8 +279,8 @@ entete("Nouvelle vente", false);
                 <h3 class="card-title">1. Client</h3>
 
                 <div class="row">
-                    <div class="col-12 col-md-6"><label class="choice"><input type="radio" name="mode_client" value="nouveau" <?= $f['mode_client'] === 'nouveau' ? 'checked' : '' ?>><span class="choice-label">➕ Nouveau client</span></label></div>
-                    <div class="col-12 col-md-6"><label class="choice"><input type="radio" name="mode_client" value="existant" <?= $f['mode_client'] === 'existant' ? 'checked' : '' ?>><span class="choice-label">🔎 Client existant</span></label></div>
+                    <div class="col-12 col-md-6"><label class="choice"><input type="radio" name="mode_client" value="nouveau" <?= $f['mode_client'] === 'nouveau' ? 'checked' : '' ?>><span class="choice-label">Nouveau client</span></label></div>
+                    <div class="col-12 col-md-6"><label class="choice"><input type="radio" name="mode_client" value="existant" <?= $f['mode_client'] === 'existant' ? 'checked' : '' ?>><span class="choice-label">Client existant</span></label></div>
                 </div>
 
                 <div class="client-panel mt-1" data-mode="existant" hidden>
@@ -435,3 +437,4 @@ entete("Nouvelle vente", false);
 <?php endif; ?>
 
 <?php pied(); ?>
+ 
