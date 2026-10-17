@@ -61,7 +61,7 @@ require __DIR__ . '/admin/includes/db.php';
                 </div>
             <?php endif; ?>
         </div>
-        <a href="#section2" class="btn-browse">voire les tiket</a>
+        <a href="#section2" class="btn-browse">voire les ticket</a>
     </section>
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <section class="section2" id="section2">
