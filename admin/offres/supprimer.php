@@ -6,9 +6,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     else {
         try {
             $pdo->beginTransaction();
+            $lock=$pdo->prepare('SELECT id_offre FROM offre WHERE id_offre=? FOR UPDATE');$lock->execute([$id]);
+            $check=$pdo->prepare('SELECT COUNT(*) FROM promotion_billet WHERE id_offre=?');$check->execute([$id]);
+            if ((int)$check->fetchColumn()>0) throw new DomainException('Cette annonce possède des tickets. Rendez-la Indisponible pour conserver leurs liens et leur historique.');
             $stmt = $pdo->prepare('DELETE FROM offre_jeu WHERE id_offre = ?'); $stmt->execute([$id]);
             $stmt = $pdo->prepare('DELETE FROM offre WHERE id_offre = ?'); $stmt->execute([$id]);
             $pdo->commit(); offre_flash('L’offre a bien été supprimée.');
+        } catch (DomainException $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            $erreur=$e->getMessage();
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) { $pdo->rollBack(); }
             error_log('Suppression offre : ' . $e->getMessage()); $erreur = 'La suppression est impossible pour le moment. Veuillez réessayer.';

@@ -45,6 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $lock = $pdo->prepare('SELECT id_offre FROM offre WHERE id_offre = ? FOR UPDATE'); $lock->execute([$offreId]);
                 if (!$lock->fetchColumn()) { throw new RuntimeException('Offre supprimée par un autre administrateur.'); }
             }
+            if ($offreId && !$selection) {
+                $check=$pdo->prepare('SELECT COUNT(*) FROM promotion_billet WHERE id_offre=?');$check->execute([$offreId]);
+                if ((int)$check->fetchColumn()>0) throw new DomainException('Cette annonce possède des tickets : conservez au moins un jeu.');
+            }
             $valeurs = [$offre['nom_offre'], $offre['description'] ?: null, $offre['prix_offre'], $offre['date_debut'] ?: null, $offre['date_fin'] ?: null, $offre['etat'], $offre['img_offre'] ?: null];
             if ($offreId) {
                 $stmt = $pdo->prepare('UPDATE offre SET nom_offre=?, description=?, prix_offre=?, date_debut=?, date_fin=?, etat=?, img_offre=? WHERE id_offre=?');
@@ -57,6 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare('INSERT INTO offre_jeu (id_offre,id_jeu) VALUES (?,?)');
             foreach ($selection as $idJeu) { $stmt->execute([$offreId, $idJeu]); }
             $pdo->commit(); offre_flash('L’offre a bien été enregistrée.');
+        } catch (DomainException $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            $erreurs[]=$e->getMessage();
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) { $pdo->rollBack(); }
             error_log('Gestion offres : ' . $e->getMessage());
@@ -68,17 +75,17 @@ $titre = $offreId ? 'Modifier l’offre' : 'Ajouter une offre';
 ?>
 <!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title><?= offre_h($titre) ?> | Parc des Princes</title><link rel="stylesheet" href="../assets/css/admin.css"></head><body>
 <?php require __DIR__ . '/../includes/sidebar.php'; ?>
-<main><div class="page-header"><div><h1><?= offre_h($titre) ?></h1><p>Définissez votre formule et les jeux qu’elle inclut.</p></div><a href="index.php" class="btn-secondary">Retour aux offres</a></div>
+<main><div class="page-header"><div><h1><?= offre_h($titre) ?></h1><p>Créez votre annonce avec son image et les jeux communs à ses tickets.</p></div><a href="index.php" class="btn-secondary">Retour aux offres</a></div>
 <div class="form-box">
 <?php if ($erreurs): ?><div class="alert-error" role="alert"><ul><?php foreach (array_unique($erreurs) as $e): ?><li><?= offre_h($e) ?></li><?php endforeach; ?></ul></div><?php endif; ?>
 <form method="post"><input type="hidden" name="csrf" value="<?= offre_h(offre_token()) ?>"><div class="form-grid">
 <div class="form-group"><label for="nom">Nom de l’offre *</label><input id="nom" name="nom_offre" maxlength="100" required value="<?= offre_h($offre['nom_offre']) ?>"></div>
-<div class="form-group"><label for="prix">Prix de l’offre (DH) *</label><input id="prix" name="prix_offre" type="number" min="0" max="99999999.99" step="0.01" required value="<?= offre_h($offre['prix_offre']) ?>"></div>
+<div class="form-group"><label for="prix">Prix annoncé (DH) *</label><input id="prix" name="prix_offre" type="number" min="0" max="99999999.99" step="0.01" required value="<?= offre_h($offre['prix_offre']) ?>"></div>
 <div class="form-group"><label for="debut">Date de début</label><input id="debut" name="date_debut" type="date" value="<?= offre_h($offre['date_debut']) ?>"><span class="field-help">Facultatif : vide = pas de limite de début.</span></div>
 <div class="form-group"><label for="fin">Date de fin</label><input id="fin" name="date_fin" type="date" value="<?= offre_h($offre['date_fin']) ?>"><span class="field-help">Facultatif : vide = pas de limite de fin.</span></div>
 <div class="form-group"><label for="etat">État *</label><select id="etat" name="etat" required><?php foreach ($etats as $e): ?><option value="<?= offre_h($e) ?>" <?= $offre['etat'] === $e ? 'selected' : '' ?>><?= offre_h($e) ?></option><?php endforeach; ?></select></div>
 <div class="form-group"><label for="image">Image (chemin ou URL HTTPS)</label><input id="image" name="img_offre" maxlength="255" value="<?= offre_h($offre['img_offre']) ?>" placeholder="Client/assets/images/offre.png"><span class="field-help">Référence une image existante ; aucun fichier à téléverser.</span></div>
 <div class="form-group full-width"><label for="description">Description</label><textarea id="description" name="description"><?= offre_h($offre['description']) ?></textarea></div>
-<fieldset class="form-group full-width" style="border:0;padding:0;margin:0"><legend class="form-label">Jeux inclus</legend><p class="field-help">Sélectionnez les jeux associés à cette offre.</p><div class="checkbox-list"><?php foreach ($jeux as $jeu): ?><label><input type="checkbox" name="jeux[]" value="<?= (int)$jeu['id_jeu'] ?>" <?= in_array((int)$jeu['id_jeu'], $selection, true) ? 'checked' : '' ?>><?= offre_h($jeu['nom']) ?></label><?php endforeach; ?><?php if (!$jeux): ?><p class="field-help">Aucun jeu enregistré pour le moment.</p><?php endif; ?></div></fieldset>
+<fieldset class="form-group full-width" style="border:0;padding:0;margin:0"><legend class="form-label">Jeux inclus</legend><p class="field-help">Ces jeux seront communs à tous les tickets associés à cette annonce.</p><div class="checkbox-list"><?php foreach ($jeux as $jeu): ?><label><input type="checkbox" name="jeux[]" value="<?= (int)$jeu['id_jeu'] ?>" <?= in_array((int)$jeu['id_jeu'], $selection, true) ? 'checked' : '' ?>><?= offre_h($jeu['nom']) ?></label><?php endforeach; ?><?php if (!$jeux): ?><p class="field-help">Aucun jeu enregistré pour le moment.</p><?php endif; ?></div></fieldset>
 </div><div class="form-actions"><button class="btn-primary" type="submit">Enregistrer l’offre</button><a class="btn-secondary" href="index.php">Annuler</a></div></form>
 </div></main></body></html>

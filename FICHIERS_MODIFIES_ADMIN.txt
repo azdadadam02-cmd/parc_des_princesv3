@@ -1,0 +1,18 @@
+Fichiers existants modifiés :
+admin/includes/sidebar.php
+admin/offres/index.php
+admin/offres/supprimer.php
+admin/offres/_formulaire.php
+
+Nouveaux fichiers :
+admin/offres/details.php
+admin/promotions/_commun.php
+admin/promotions/index.php
+admin/promotions/_formulaire.php
+admin/promotions/ajouter.php
+admin/promotions/modifier.php
+admin/promotions/desactiver.php
+admin/assets/css/offres-admin.css
+admin/assets/js/promotions-admin.js
+database/ajout_admin_offres.sql
+INSTALL_ADMIN_OFFRES.md
