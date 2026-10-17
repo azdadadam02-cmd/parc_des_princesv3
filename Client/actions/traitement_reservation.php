@@ -73,78 +73,115 @@ try {
         throw new RuntimeException("Compte client invalide.");
     }
 
-    $pdo->prepare("
-        UPDATE utilisateur
-        SET telephone = ?
-        WHERE email = ?
-    ")->execute([
-        $telephone,
-        $email_client
-    ]);
+    $pdo->prepare("UPDATE utilisateur SET telephone = ? WHERE email = ?")
+        ->execute([$telephone, $email_client]);
 
-    $pdo->prepare("
-        UPDATE client
-        SET date_naissance = ?,
-            cin = ?
-        WHERE email = ?
-    ")->execute([
-        $date_naissance,
-        $cin,
-        $email_client
-    ]);
+    $pdo->prepare("UPDATE client SET date_naissance = ?, cin = ? WHERE email = ?")
+        ->execute([$date_naissance, $cin, $email_client]);
 
     $montant = 0.0;
     $nb_personnes = 0;
     $lignes = [];
 
     foreach ($_SESSION['panier'] as $cle => $ticket) {
+        $quantite = max(1, (int)($ticket['quantite'] ?? 1));
 
-        $id_jeu =
-            isset($ticket['id_jeu'])
-                ? (int)$ticket['id_jeu']
-                : (
-                    isset($ticket['id'])
-                        ? (int)$ticket['id']
-                        : (int)$cle
-                );
+        // CAS 1 : Ila kan Ticket Promotion (Pack)
+        if (isset($ticket['id_promo']) && (int)$ticket['id_promo'] > 0) {
+            $id_promo = (int)$ticket['id_promo'];
 
-        $quantite = max(
-            1,
-            (int)($ticket['quantite'] ?? 1)
-        );
+            $st_promo = $pdo->prepare("
+                SELECT nom_promo, valeur, capacite_membres, jeux_inclus 
+                FROM promotion_billet 
+                WHERE id_promo = ? AND etat = 'Actif'
+            ");
+            $st_promo->execute([$id_promo]);
+            $promo_db = $st_promo->fetch(PDO::FETCH_ASSOC);
 
-        if ($id_jeu <= 0) {
-            continue;
+            if (!$promo_db) {
+                throw new RuntimeException("Ce pack promotionnel n'est plus disponible.");
+            }
+
+            $prix_pack = (float)$promo_db['valeur'];
+            $cap_membres = max(1, (int)$promo_db['capacite_membres']);
+
+            // L'montant total kayb9a howa taman l'pack bla ma ytbdl!
+            $montant += $prix_pack * $quantite;
+            $nb_personnes += $cap_membres * $quantite;
+
+            $jeux_inclus = json_decode($promo_db['jeux_inclus'] ?? '{}', true);
+            if (!is_array($jeux_inclus) || empty($jeux_inclus)) {
+                throw new RuntimeException("Aucun jeu configuré dans le pack : " . $promo_db['nom_promo']);
+            }
+
+            foreach ($jeux_inclus as $id_j => $qte_par_pack) {
+                $id_j = (int)$id_j;
+                $qte_totale_jeu = (int)$qte_par_pack * $quantite;
+
+                if ($qte_totale_jeu <= 0) {
+                    continue;
+                }
+
+                // Njibo hta tarif l-asli dyal lo3ba mn table JEU
+                $st_jeu = $pdo->prepare("SELECT nom, tarif, capacite FROM jeu WHERE id_jeu = ? FOR UPDATE");
+                $st_jeu->execute([$id_j]);
+                $jeu_info = $st_jeu->fetch(PDO::FETCH_ASSOC);
+
+                if (!$jeu_info || (int)$jeu_info['capacite'] < $qte_totale_jeu) {
+                    throw new RuntimeException("Stock épuisé pour le jeu : " . ($jeu_info['nom'] ?? ('#' . $id_j)));
+                }
+
+                // N9sso la capacité mn table JEU
+                $pdo->prepare("UPDATE jeu SET capacite = capacite - ? WHERE id_jeu = ?")
+                    ->execute([$qte_totale_jeu, $id_j]);
+
+                // N7tto tarif l-asli dyal lo3ba f choisir bach l-client ychof ch7al katdir kol lo3ba
+                $tarif_jeu_reel = (float)$jeu_info['tarif'];
+
+                $lignes[] = [
+                    $id_j,
+                    $qte_totale_jeu,
+                    $tarif_jeu_reel
+                ];
+            }
+        } 
+        // CAS 2 : Ila kan Jeu 3adi
+        else {
+            $id_jeu = isset($ticket['id_jeu']) ? (int)$ticket['id_jeu'] : (isset($ticket['id']) ? (int)$ticket['id'] : 0);
+
+            if ($id_jeu <= 0) {
+                continue;
+            }
+
+            $st = $pdo->prepare("SELECT nom, tarif, capacite FROM jeu WHERE id_jeu = ? FOR UPDATE");
+            $st->execute([$id_jeu]);
+            $jeu_db = $st->fetch(PDO::FETCH_ASSOC);
+
+            if (!$jeu_db) {
+                throw new RuntimeException("Jeu introuvable.");
+            }
+
+            if ((int)$jeu_db['capacite'] < $quantite) {
+                throw new RuntimeException("Capacité insuffisante pour le jeu : " . $jeu_db['nom']);
+            }
+
+            $pdo->prepare("UPDATE jeu SET capacite = capacite - ? WHERE id_jeu = ?")
+                ->execute([$quantite, $id_jeu]);
+
+            $tarif = (float)$jeu_db['tarif'];
+            $montant += $tarif * $quantite;
+            $nb_personnes += $quantite;
+
+            $lignes[] = [
+                $id_jeu,
+                $quantite,
+                $tarif
+            ];
         }
-
-        $st = $pdo->prepare("
-            SELECT tarif
-            FROM jeu
-            WHERE id_jeu = ?
-        ");
-
-        $st->execute([$id_jeu]);
-
-        $tarif_db = $st->fetchColumn();
-
-        if ($tarif_db === false) {
-            throw new RuntimeException("Jeu introuvable.");
-        }
-
-        $tarif = (float)$tarif_db;
-
-        $montant += $tarif * $quantite;
-        $nb_personnes += $quantite;
-
-        $lignes[] = [
-            $id_jeu,
-            $quantite,
-            $tarif
-        ];
     }
 
     if (!$lignes) {
-        throw new RuntimeException("Aucun jeu valide dans le panier.");
+        throw new RuntimeException("Aucun ticket valide dans le panier.");
     }
 
     $stmt = $pdo->prepare("
@@ -183,42 +220,38 @@ try {
 
     $num_reservation = (int)$pdo->lastInsertId();
 
+    // Njm3o les jeux ila t3awdo f l'panier m3a l-7ifad 3la tarif l-asli dyalhom
+    $lignes_groupees = [];
+    foreach ($lignes as [$id_jeu, $quantite, $prix_unitaire]) {
+        if (!isset($lignes_groupees[$id_jeu])) {
+            $lignes_groupees[$id_jeu] = ['quantite' => 0, 'prix_unitaire' => $prix_unitaire];
+        }
+        $lignes_groupees[$id_jeu]['quantite'] += $quantite;
+    }
+
     $stmt_choisir = $pdo->prepare("
-        INSERT INTO choisir
-        (
-            num_reservation,
-            id_jeu,
-            quantite,
-            prix_unitaire
-        )
+        INSERT INTO choisir (num_reservation, id_jeu, quantite, prix_unitaire)
         VALUES (?, ?, ?, ?)
     ");
 
-    foreach ($lignes as [$id_jeu, $quantite, $prix_unitaire]) {
-
+    foreach ($lignes_groupees as $id_jeu => $data) {
         $stmt_choisir->execute([
             $num_reservation,
             $id_jeu,
-            $quantite,
-            $prix_unitaire
+            $data['quantite'],
+            $data['prix_unitaire']
         ]);
     }
 
     $pdo->commit();
-
     unset($_SESSION['panier']);
 
     header("Location: ../../index.php?reservation=success");
     exit();
 
 } catch (Throwable $e) {
-
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-
-    die(
-        "Erreur lors de la réservation : "
-        . htmlspecialchars($e->getMessage())
-    );
+    die("<script>alert('Erreur : " . addslashes($e->getMessage()) . "'); window.location.href='../../index.php#section2';</script>");
 }

@@ -348,6 +348,62 @@ body {
     justify-content: space-between;
     gap: 10px;
 }
+/* Filtre K7el dyal Ticket Indisponible (B7al PS5 Salle) */
+.tiket-card {
+    position: relative;
+}
+
+.tiket-card.indisponible {
+    pointer-events: none;
+    user-select: none;
+    filter: grayscale(40%);
+}
+
+.tiket-card.indisponible:hover {
+    transform: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.tiket-indispo-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.65) 0%,
+        rgba(0, 0, 0, 0.88) 75%,
+        rgba(0, 0, 0, 0.96) 100%
+    );
+    border-radius: 35px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 28px;
+    text-align: center;
+}
+
+.tiket-indispo-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #9e9e9e;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.tiket-indispo-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666666;
+}
+
+.disabled-btn {
+    background-color: #444 !important;
+    color: #999 !important;
+    cursor: not-allowed;
+}
 
 .btn-details {
     flex: 1;
