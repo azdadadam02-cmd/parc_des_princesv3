@@ -18,7 +18,50 @@ require __DIR__ . '/admin/includes/db.php';
     
     <section class="section1">
         <div class="down">
-    
+            <?php
+            try {
+                $stmt_aff = $pdo->query("SELECT * FROM affiche ORDER BY id_affiche DESC");
+                $affiches = $stmt_aff->fetchAll(PDO::FETCH_ASSOC);
+                $nb_affiches = count($affiches);
+            } catch (PDOException $e) {
+                $affiches = [];
+                $nb_affiches = 0;
+            }
+            ?>
+
+            <?php if ($nb_affiches > 0): ?>
+                <div class="affiche-slider" id="afficheSlider">
+                    <!-- L-piste li kat-scrolla -->
+                    <div class="affiche-track" id="afficheTrack">
+                        <?php foreach ($affiches as $aff): ?>
+                            <div class="affiche-slide">
+                                <img src="<?php echo htmlspecialchars($aff['img_affiche']); ?>" alt="Affiche Promotionnelle">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Ila kano ktr mn tswira w7da, nbiyyno Next > w Prev < -->
+                    <?php if ($nb_affiches > 1): ?>
+                        <button type="button" class="affiche-btn prev" id="btnPrevAffiche" aria-label="Précédent">
+                            &#10094;
+                        </button>
+                        <button type="button" class="affiche-btn next" id="btnNextAffiche" aria-label="Suivant">
+                            &#10095;
+                        </button>
+
+                        <!-- N9i6at (Dots) lte7t -->
+                        <div class="affiche-dots" id="afficheDots">
+                            <?php for ($i = 0; $i < $nb_affiches; $i++): ?>
+                                <span class="affiche-dot <?php echo ($i === 0) ? 'active' : ''; ?>" data-index="<?php echo $i; ?>"></span>
+                            <?php endfor; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php else: ?>
+                <div class="affiche-empty">
+                    <p>Aucune affiche disponible pour le moment.</p>
+                </div>
+            <?php endif; ?>
         </div>
         <a href="#section2" class="btn-browse">voire les tiket</a>
     </section>

@@ -119,4 +119,72 @@ function fermerModalDetails(event) {
         document.getElementById('ticketDetailsModal').classList.remove('show');
     }
 }
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.getElementById('afficheTrack');
+    if (!track) return;
+
+    const slides = track.querySelectorAll('.affiche-slide');
+    const totalSlides = slides.length;
+
+    // Ila kant tswira w7da (wla 0), ma ndiro la scroll auto la next
+    if (totalSlides <= 1) return;
+
+    const btnNext = document.getElementById('btnNextAffiche');
+    const btnPrev = document.getElementById('btnPrevAffiche');
+    const dots = document.querySelectorAll('.affiche-dot');
+
+    let currentIndex = 0;
+    let autoScrollTimer = null;
+
+    function allerASlide(index) {
+        // Ila fat l-khera يرجع l-lowla (0), w ila rj3 9bel 0 يمشي l-khera
+        currentIndex = (index + totalSlides) % totalSlides;
+        track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentIndex);
+        });
+    }
+
+    function demarrerAutoScroll() {
+        arreterAutoScroll();
+        autoScrollTimer = setInterval(function() {
+            allerASlide(currentIndex + 1);
+        }, 5000); // 5 secondes
+    }
+
+    function arreterAutoScroll() {
+        if (autoScrollTimer) {
+            clearInterval(autoScrollTimer);
+        }
+    }
+
+    // Bouton Next >
+    if (btnNext) {
+        btnNext.addEventListener('click', function() {
+            allerASlide(currentIndex + 1);
+            demarrerAutoScroll(); // N3awdo n-zeriw l-7sab dyal 5s mli ycliqui
+        });
+    }
+
+    // Bouton Prev <
+    if (btnPrev) {
+        btnPrev.addEventListener('click', function() {
+            allerASlide(currentIndex - 1);
+            demarrerAutoScroll();
+        });
+    }
+
+    // Clic 3la n-n9i6at lte7t
+    dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            const idx = parseInt(this.getAttribute('data-index')) || 0;
+            allerASlide(idx);
+            demarrerAutoScroll();
+        });
+    });
+
+    // Nbdaw l-Auto-Scroll dyal 5s
+    demarrerAutoScroll();
+});
  
