@@ -1,6 +1,7 @@
 <?php
 session_start();
 require '../includes/db.php';
+require_once __DIR__.'/../includes/tarifs.php';
 
 $role = strtolower(trim((string)($_SESSION['user_role'] ?? $_SESSION['role'] ?? '')));
 
@@ -144,7 +145,7 @@ try {
                 continue;
             }
 
-            $st = $pdo->prepare("SELECT nom, tarif, capacite FROM jeu WHERE id_jeu = ? FOR UPDATE");
+            $st = $pdo->prepare("SELECT nom, tarif, tarif_promo, capacite FROM jeu WHERE id_jeu = ? FOR UPDATE");
             $st->execute([$id_jeu]);
             $jeu_db = $st->fetch(PDO::FETCH_ASSOC);
 
@@ -159,7 +160,7 @@ try {
             $pdo->prepare("UPDATE jeu SET capacite = capacite - ? WHERE id_jeu = ?")
                 ->execute([$quantite, $id_jeu]);
 
-            $tarif = (float)$jeu_db['tarif'];
+            $tarif = client_prix_jeu($jeu_db);
             $montant += $tarif * $quantite;
             $nb_personnes += $quantite;
 

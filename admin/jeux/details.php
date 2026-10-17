@@ -144,7 +144,12 @@ if (!$jeu) {
             <span>Tarif</span>
 
             <strong>
-                <?= $jeu['tarif'] ?> DH
+                <?php if (isset($jeu['tarif_promo'])): ?>
+                                <del><?= number_format((float)$jeu['tarif'], 2) ?> DH</del><br>
+                                <strong style="color:var(--ok)"><?= number_format((float)$jeu['tarif_promo'], 2) ?> DH</strong>
+                            <?php else: ?>
+                                <?= number_format((float)$jeu['tarif'], 2) ?> DH
+                            <?php endif; ?>
             </strong>
 
         </div>

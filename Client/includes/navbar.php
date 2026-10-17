@@ -1,4 +1,7 @@
-<?php 
+<?php
+require_once __DIR__.'/tarifs.php';
+client_actualiser_tarifs_panier($pdo);
+
 $docRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT']));
 $clientDir = str_replace('\\', '/', realpath(__DIR__ . '/..'));
 $CLIENT_URL = (stripos($clientDir, $docRoot) === 0) ? substr($clientDir, strlen($docRoot)) : '/Client';

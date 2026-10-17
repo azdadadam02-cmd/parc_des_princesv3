@@ -39,6 +39,7 @@ $jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         'nom' => $jeu['nom'],
                         'description' => $jeu['description'],
                         'tarif' => $jeu['tarif'],
+                        'tarif_promo' => $jeu['tarif_promo'] ?? null,
                         'duree_session' => $jeu['duree_session'],
                         'id_jeu' => $jeu['id_jeu'],
                         'img_jeu' => $jeu['img_jeu'],
@@ -71,6 +72,7 @@ $jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $panier_js = [];
         if (isset($_SESSION['panier'])) {
             foreach ($_SESSION['panier'] as $ticket) {
+                if ((int)($ticket['id_promo'] ?? 0) > 0 || !isset($ticket['id_jeu'])) continue;
                 $panier_js[$ticket['id_jeu']] = ($panier_js[$ticket['id_jeu']] ?? 0) + $ticket['quantite'];
             }
         }

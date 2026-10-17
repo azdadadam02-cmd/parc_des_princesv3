@@ -29,10 +29,16 @@ function refreshModalState(idJeu, capacite) {
     }
 }
 
-function openModal(nom, desc, tarif, duree, id_jeu, img_url, age_min, capacite) {
+function openModal(nom, desc, tarif, duree, id_jeu, img_url, age_min, capacite, tarif_promo) {
     document.getElementById("modalNom").textContent = nom;
     document.getElementById("modalDesc").textContent = desc;
-    document.getElementById("modalTarif").textContent = tarif;
+    var prixNormal = Number(tarif);
+    var prixPromo = tarif_promo === null || tarif_promo === undefined || tarif_promo === "" ? NaN : Number(tarif_promo);
+    var enPromotion = Number.isFinite(prixPromo) && prixPromo >= 0 && prixPromo < prixNormal;
+    var ancienTarif = document.getElementById("modalAncienTarif");
+    ancienTarif.hidden = !enPromotion;
+    ancienTarif.textContent = enPromotion ? prixNormal.toFixed(2) + " MAD" : "";
+    document.getElementById("modalTarif").textContent = (enPromotion ? prixPromo : prixNormal).toFixed(2);
     document.getElementById("modalDuree").textContent = duree;
     document.getElementById("modalIdJeu").value = id_jeu;
     document.getElementById("modalImg").style.backgroundImage = "url('" + img_url + "')";
@@ -59,7 +65,7 @@ function openModal(nom, desc, tarif, duree, id_jeu, img_url, age_min, capacite) 
 function openModalFromCard(el) {
     var j = JSON.parse(el.dataset.jeu);
     openModal(j.nom, j.description, j.tarif, j.duree_session,
-              j.id_jeu, j.img_jeu, j.age_min, j.capacite);
+              j.id_jeu, j.img_jeu, j.age_min, j.capacite, j.tarif_promo);
 }
 
 function closeModal() {

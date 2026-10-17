@@ -316,10 +316,12 @@ $jeux = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </td>
 
                         <td>
-                            <?= number_format(
-                                (float)$jeu['tarif'],
-                                2
-                            ) ?> DH
+                            <?php if (isset($jeu['tarif_promo'])): ?>
+                                <del><?= number_format((float)$jeu['tarif'], 2) ?> DH</del><br>
+                                <strong style="color:var(--ok)"><?= number_format((float)$jeu['tarif_promo'], 2) ?> DH</strong>
+                            <?php else: ?>
+                                <?= number_format((float)$jeu['tarif'], 2) ?> DH
+                            <?php endif; ?>
                         </td>
 
                         <td>

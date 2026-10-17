@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'includes/db.php';
+require_once __DIR__.'/includes/tarifs.php';
 
 if (!isset($_SESSION['user_email'])) {
     header("Location: ../login.php");
@@ -13,6 +14,8 @@ if (!isset($_SESSION['panier']) || count($_SESSION['panier']) == 0) {
 }
 
 $email_client = $_SESSION['user_email'];
+
+client_actualiser_tarifs_panier($pdo);
 
 $total_montant = 0;
 $total_personnes = 0;
