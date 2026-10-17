@@ -1,5 +1,5 @@
 <?php
-// Le prix du jeu est toujours calculé depuis les données de la base.
+
 function client_prix_jeu(array $jeu): float {
     $normal=(float)$jeu['tarif'];
     $promo=$jeu['tarif_promo']??null;

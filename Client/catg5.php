@@ -33,6 +33,18 @@ $jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach($jeux_catg as $jeu): 
                     $is_disponible = (strtolower($jeu['etat']) === 'disponible');
                     $card_class = $is_disponible ? "game-card" : "game-card indisponible";
+
+                 
+                    $tarif_normal = (float)$jeu['tarif'];
+                    $tarif_promo = $jeu['tarif_promo'] ?? null;
+                    $en_promo = (
+                        $tarif_promo !== null && 
+                        $tarif_promo !== '' && 
+                        is_numeric($tarif_promo) && 
+                        (float)$tarif_promo >= 0 && 
+                        (float)$tarif_promo < $tarif_normal
+                    );
+
                     $jeu_data = htmlspecialchars(json_encode([
                         'nom' => $jeu['nom'],
                         'description' => $jeu['description'],
@@ -52,6 +64,14 @@ $jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="<?php echo $card_class; ?>" 
                          style="background-image: url('<?php echo htmlspecialchars($jeu['img_jeu']); ?>');"
                          <?php echo $onclick_attr; ?>>
+                        
+                       
+                        <?php if($en_promo): ?>
+                            <div class="promo-badge">
+                                <i class="fas fa-fire"></i> PROMO
+                            </div>
+                        <?php endif; ?>
+
                         <div class="game-title">
                             <?php echo htmlspecialchars($jeu['nom']); ?>
                             <?php if(!$is_disponible): ?>
