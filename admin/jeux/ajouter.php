@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../offres/_commun.php';
+require_once __DIR__ . '/_image.php';
 
 
 $message = "";
@@ -146,64 +147,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }  
       else {
 
-        $img_jeu = null;
+        $nouvelle_image = null;
 
-
-$img_jeu = null;
-
-if (
-    !isset($_FILES['img_jeu']) ||
-    $_FILES['img_jeu']['error'] === UPLOAD_ERR_NO_FILE
-) {
-
-    $error = "Veuillez ajouter une image du jeu.";
-
-} elseif (
-    $_FILES['img_jeu']['error'] !== UPLOAD_ERR_OK
-) {
-
-    $error = "Erreur lors de l'envoi de l'image.";
-
-} else {
-
-    $extension = strtolower(
-        pathinfo(
-            $_FILES['img_jeu']['name'],
-            PATHINFO_EXTENSION
-        )
-    );
-
-    $extensionsAutorisees = [
-        'jpg',
-        'jpeg',
-        'png',
-        'webp'
-    ];
-
-    if (!in_array($extension, $extensionsAutorisees)) {
-
-        $error = "L'image doit être au format JPG, JPEG, PNG ou WEBP.";
-
-    } else {
-
-        $dossier = __DIR__ . '/../uploads/jeux/';
-
-        if (!is_dir($dossier)) {
-            mkdir($dossier, 0777, true);
+        try {
+            [$img_jeu, $nouvelle_image] = jeu_recevoir_image(null, true);
+        } catch (Throwable $e) {
+            if ($e instanceof DomainException) {
+                $error = $e->getMessage();
+            } else {
+                error_log($e->getMessage());
+                $error = "Impossible d'enregistrer l'image. Vérifiez le dossier uploads/jeux.";
+            }
         }
-
-        $img_jeu =
-            'jeu_' .
-            uniqid() .
-            '.' .
-            $extension;
-
-        move_uploaded_file(
-            $_FILES['img_jeu']['tmp_name'],
-            $dossier . $img_jeu
-        );
-    }
-}
 
 if (empty($error)) {
         $sql = "
@@ -245,6 +200,7 @@ if (empty($error)) {
         ";
 
 
+        try {
         $stmt =
             $pdo->prepare($sql);
 
@@ -258,13 +214,13 @@ if (empty($error)) {
                 $description,
 
             ':age_min' =>
-                $age_min,
+                $age_min === '' ? null : $age_min,
 
             ':capacite' =>
                 $capacite,
 
             ':duree_session' =>
-                $duree_session,
+                $duree_session === '' ? null : $duree_session,
 
             ':tarif' =>
                 $tarif,
@@ -274,7 +230,7 @@ if (empty($error)) {
                 $etat,
 
             ':date_mise_service' =>
-                $date_mise_service,
+                $date_mise_service === '' ? null : $date_mise_service,
 
             ':id_categorie' =>
                 $id_categorie,
@@ -295,6 +251,13 @@ if (empty($error)) {
         );
 
         exit;
+        } catch (PDOException $e) {
+            if ($nouvelle_image && is_file($nouvelle_image)) {
+                unlink($nouvelle_image);
+            }
+            error_log($e->getMessage());
+            $error = "Enregistrement impossible. Réessayez.";
+        }
         }
     }
 }
@@ -589,18 +552,37 @@ if (empty($error)) {
                 </div>
 
 
-                <div class="form-group">
 
+                <div class="form-group full-width">
                     <label>Image du jeu</label>
-
-                    <input
-    type="file"
-    name="img_jeu"
-    accept=".jpg,.jpeg,.png,.webp"
-    required
->
-
+                    <p>Choisissez un fichier sur votre PC ou renseignez un lien direct vers une image.</p>
+                    
                 </div>
+
+                <div class="form-group">
+                    <label for="img_jeu">Fichier depuis votre PC</label>
+                    <input
+                        id="img_jeu"
+                        type="file"
+                        name="img_jeu"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
+                    <small>JPG, PNG ou WEBP, 8 Mo maximum.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="img_jeu_url">Ou URL de l’image</label>
+                    <input
+                        id="img_jeu_url"
+                        type="url"
+                        name="img_jeu_url"
+                        maxlength="255"
+                        placeholder="https://exemple.com/image.jpg"
+                        value="<?= offre_h(is_string($_POST['img_jeu_url'] ?? null) ? $_POST['img_jeu_url'] : '') ?>"
+                    >
+                    <small>Si un fichier est choisi, il est utilisé en priorité.</small>
+                </div>
+
 
 
             </div>

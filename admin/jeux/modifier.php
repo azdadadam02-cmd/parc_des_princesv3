@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../offres/_commun.php';
+require_once __DIR__ . '/_image.php';
 
 $error = "";
 
@@ -142,6 +143,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } else {
 
+        $nouvelle_image = null;
+
+        try {
+            [$img_jeu, $nouvelle_image] = jeu_recevoir_image($jeu['img_jeu'], false);
+
         $sql = "
             UPDATE jeu
 
@@ -156,6 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 etat = :etat,
                 date_mise_service = :date_mise_service,
                 id_categorie = :id_categorie,
+                img_jeu = :img_jeu,
                 email_responsable = :email_responsable
 
             WHERE id_jeu = :id
@@ -170,23 +177,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             ':description' => $description,
 
-            ':age_min' => $age_min,
+            ':age_min' => $age_min === '' ? null : $age_min,
 
             ':capacite' => $capacite,
 
-            ':duree_session' => $duree_session,
+            ':duree_session' => $duree_session === '' ? null : $duree_session,
 
             ':tarif' => $tarif,
             ':tarif_promo' => $tarif_promo === '' ? null : $tarif_promo,
 
             ':etat' => $etat,
 
-            ':date_mise_service' => $date_mise_service,
+            ':date_mise_service' => $date_mise_service === '' ? null : $date_mise_service,
 
             ':id_categorie' => $id_categorie,
 
             ':email_responsable' =>
                 $email_responsable,
+
+            ':img_jeu' => $img_jeu,
 
             ':id' => $id
 
@@ -194,6 +203,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         header("Location: index.php");
         exit;
+        } catch (Throwable $e) {
+            if ($nouvelle_image && is_file($nouvelle_image)) {
+                unlink($nouvelle_image);
+            }
+            if ($e instanceof DomainException) {
+                $error = $e->getMessage();
+            } else {
+                error_log($e->getMessage());
+                $error = "Enregistrement impossible. Vérifiez le dossier des images et réessayez.";
+            }
+        }
     }
 }
 
@@ -264,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error) {
         <?php endif; ?>
 
 
-        <form method="POST"><input type="hidden" name="csrf" value="<?= offre_h(offre_token()) ?>">
+        <form method="POST" enctype="multipart/form-data"><input type="hidden" name="csrf" value="<?= offre_h(offre_token()) ?>">
 
 
             <div class="form-grid">
@@ -481,6 +501,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error) {
                     ><?= htmlspecialchars($jeu['description']) ?></textarea>
 
                 </div>
+                <div class="form-group full-width">
+                    <label>Image du jeu</label>
+                    <p>Choisissez un fichier sur votre PC ou renseignez un lien direct vers une image.</p>
+                    <small>Laissez les deux champs vides pour conserver la photo actuelle.</small>
+                    <?php if (!empty($jeu['img_jeu'])): ?>
+                        <img
+                            src="<?= offre_h(jeu_image_affichage($jeu['img_jeu'])) ?>"
+                            alt="Image actuelle du jeu"
+                            style="width:100%;max-width:280px;max-height:180px;object-fit:contain;border-radius:12px;margin-top:12px;"
+                        >
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group">
+                    <label for="img_jeu">Fichier depuis votre PC</label>
+                    <input
+                        id="img_jeu"
+                        type="file"
+                        name="img_jeu"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
+                    <small>JPG, PNG ou WEBP, 8 Mo maximum.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="img_jeu_url">Ou URL de l’image</label>
+                    <input
+                        id="img_jeu_url"
+                        type="url"
+                        name="img_jeu_url"
+                        maxlength="255"
+                        placeholder="https://exemple.com/image.jpg"
+                        value="<?= offre_h(is_string($_POST['img_jeu_url'] ?? null) ? $_POST['img_jeu_url'] : '') ?>"
+                    >
+                    <small>Si un fichier est choisi, il est utilisé en priorité.</small>
+                </div>
+
 
             </div>
 
