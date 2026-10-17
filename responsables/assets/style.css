@@ -799,6 +799,19 @@ dialog h3 { margin: 0 0 0.5rem; }
     font-size: 1.8rem;
 }
 
+.box .box-value.box-value--icon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.box .box-value.box-value--icon svg {
+    width: 20px;
+    height: 20px;
+    color: #818cf8;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    flex-shrink: 0;
+}
 
 .game-img {
     display: block;

@@ -104,13 +104,18 @@ $etat_texte  = $etat_brut !== '' ? ucfirst_fr(mb_strtolower($etat_brut)) : 'Non 
 
 /* ---------- 4. Les 6 boîtes d'information ---------- */
 $age = $jeu['age_min'] ?? null;
+
+$icones_cat = [1 => 'monitor', 2 => 'gamepad-2', 3 => 'target', 4 => 'home'];
+$icone_cat  = $icones_cat[$jeu['id_categorie']] ?? 'gamepad-2';
+
+// Chaque info = [icône SVG, valeur]
 $infos = [
-    'Catégorie'       => '🎪 ' . ($jeu['nom_categorie'] ?? 'N/A'),
-    'Âge minimum'     => '🔞 ' . (($age !== null && $age !== '') ? $age . ' ans' : 'Tous âges'),
-    'Capacité'        => '👥 ' . $jeu['capacite'] . ' pers.',
-    'Durée session'   => '⏱️ ' . $jeu['duree_session'] . ' min',
-    'Tarif'           => '💳 ' . number_format($jeu['tarif'], 2) . ' DH',
-    'Mise en service' => '📅 ' . ($jeu['date_mise_service'] ?? 'N/A'),
+    'Catégorie'       => [$icone_cat,     $jeu['nom_categorie'] ?? 'N/A'],
+    'Âge minimum'     => ['shield-check', ($age !== null && $age !== '') ? $age . ' ans' : 'Tous âges'],
+    'Capacité'        => ['users',        $jeu['capacite'] . ' pers.'],
+    'Durée session'   => ['timer',        $jeu['duree_session'] . ' min'],
+    'Tarif'           => ['wallet',       number_format($jeu['tarif'], 2) . ' DH'],
+    'Mise en service' => ['calendar-days', $jeu['date_mise_service'] ?? 'N/A'],
 ];
 
 entete("Détails - " . $jeu['nom']);
@@ -152,11 +157,14 @@ entete("Détails - " . $jeu['nom']);
 
             <!-- Infos : 1 / 2 / 3 boîtes par ligne -->
             <div class="row">
-                <?php foreach ($infos as $label => $valeur): ?>
+                <?php foreach ($infos as $label => [$icone, $valeur]): ?>
                     <div class="col-12 col-sm-6 col-md-4">
                         <div class="box">
                             <span class="box-label"><?= h($label) ?></span>
-                            <span class="box-value"><?= h($valeur) ?></span>
+                            <span class="box-value box-value--icon">
+                                <i data-lucide="<?= h($icone) ?>"></i>
+                                <?= h($valeur) ?>
+                            </span>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -229,5 +237,7 @@ entete("Détails - " . $jeu['nom']);
         </section>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
 
 <?php pied(); ?>
