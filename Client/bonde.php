@@ -186,17 +186,31 @@ if (!$details) {
             <?php endif; ?>
 
             <?php if ($type === 'commande'): ?>
-            <div class="info-row">
-                <span class="info-label">Date de paiement :</span>
-                <span class="info-value">
-                    <?php 
-                    echo (isset($details['date_paiement']) && !empty($details['date_paiement'])) 
-                        ? htmlspecialchars($details['date_paiement']) 
-                        : "<span style='color:#888; font-style:italic;'>Non payé / Non défini</span>"; 
-                    ?>
-                </span>
-            </div>
-            <?php endif; ?>
+    <div class="info-row">
+        <span class="info-label">Période de paiement :</span>
+        <span class="info-value">
+            <?php
+            $dateDebut = $details['date_commande']
+                ?? $details['date_creation']
+                ?? null;
+
+            $dateFin = $details['date_limite_paiement']
+                ?? $details['date_visite']
+                ?? null;
+
+            if (!empty($dateDebut) && !empty($dateFin)) {
+                echo htmlspecialchars(
+                    date('d/m/Y', strtotime($dateDebut))
+                    . ' vers '
+                    . date('d/m/Y', strtotime($dateFin))
+                );
+            } else {
+                echo 'Période non définie';
+            }
+            ?>
+        </span>
+    </div>
+<?php endif; ?>
 
             <div class="info-row">
                 <span class="info-label">Statut :</span>
