@@ -78,10 +78,15 @@ require __DIR__ . '/admin/includes/db.php';
             <div class="tiket-cards-container">
                 <?php
                 try {
+             
                     $jeux_map = [];
-                    $stmt_j = $pdo->query("SELECT id_jeu, nom FROM JEU");
+                    $stmt_j = $pdo->query("SELECT id_jeu, nom, capacite, etat FROM JEU");
                     while ($row_j = $stmt_j->fetch(PDO::FETCH_ASSOC)) {
-                        $jeux_map[$row_j['id_jeu']] = $row_j['nom'];
+                        $jeux_map[$row_j['id_jeu']] = [
+                            'nom' => $row_j['nom'],
+                            'capacite' => (int)$row_j['capacite'],
+                            'etat' => strtolower(trim($row_j['etat']))
+                        ];
                     }
 
                     $stmt_promos = $pdo->query("SELECT * FROM promotion_billet WHERE etat = 'Actif'");
@@ -94,16 +99,37 @@ require __DIR__ . '/admin/includes/db.php';
 
                             $jeux_inclus_arr = json_decode($promo['jeux_inclus'] ?? '{}', true);
                             $liste_jeux_details = [];
+                            
+                      
+                            $pack_disponible = true; 
+
                             if (is_array($jeux_inclus_arr)) {
                                 foreach ($jeux_inclus_arr as $id_j => $qte_j) {
-                                    $nom_j = $jeux_map[$id_j] ?? ("Jeu #" . $id_j);
+                                    $jeu_info = $jeux_map[$id_j] ?? null;
+                                    $nom_j = $jeu_info ? $jeu_info['nom'] : ("Jeu #" . $id_j);
                                     $liste_jeux_details[] = $nom_j . " : " . $qte_j . " Ticket(s)";
+                                    
+                             
+                                    if (!$jeu_info || $jeu_info['etat'] !== 'disponible' || $jeu_info['capacite'] < $qte_j) {
+                                        $pack_disponible = false;
+                                    }
                                 }
                             }
                             $jeux_details_str = implode('|', $liste_jeux_details);
+                            
+                           
+                            $card_class = "tiket-card" . ($pack_disponible ? "" : " indisponible");
                             ?>
-                            <div class="tiket-card" data-cat="<?php echo htmlspecialchars($cat_actuelle); ?>" style="<?php echo $displayStyle; ?>">
+                            <div class="<?php echo $card_class; ?>" data-cat="<?php echo htmlspecialchars($cat_actuelle); ?>" style="<?php echo $displayStyle; ?>">
                                 
+                             
+                                <?php if (!$pack_disponible): ?>
+                                <div class="tiket-indispo-overlay">
+                                    <div class="tiket-indispo-title">ÉPUISÉ</div>
+                                    <div class="tiket-indispo-text">Stock insuffisant</div>
+                                </div>
+                                <?php endif; ?>
+
                                 <div class="tiket-card-top">
                                     <?php if (!empty($promo['date_fin'])): ?>
                                         <span class="tiket-date-fin-badge">
@@ -145,7 +171,7 @@ require __DIR__ . '/admin/includes/db.php';
                                         <span class="tiket-circle">
                                             <svg viewBox="0 0 24 24" width="22" height="22" fill="#ffffff">
                                                 <circle cx="12" cy="8.5" r="4"/>
-                                                <path d="M4.5 20.5C4.5 16.5 7.8 14 12 14C16.2 14 19.5 16.5 19.5 20.5"/>
+                                                <path d="M4.5 20.5C4.5 16.5 7.8 14 12 14C16.2 14 19.5 20.5"/>
                                             </svg>
                                         </span>
                                         <p><?php echo htmlspecialchars($promo['capacite_membres']); ?> PERSONNE(S)</p>
@@ -164,7 +190,14 @@ require __DIR__ . '/admin/includes/db.php';
                                                 onclick="ouvrirModalDetails(this)">
                                             DÉTAILS
                                         </button>
-                                        <a href="Client/actions/ajouter_panier_promo.php?id=<?php echo $promo['id_promo']; ?>" class="btn-achetier">ACHETER</a>
+                                        
+                                      
+                                        <?php if ($pack_disponible): ?>
+                                            <a href="Client/actions/ajouter_panier_promo.php?id=<?php echo $promo['id_promo']; ?>" class="btn-achetier">ACHETER</a>
+                                        <?php else: ?>
+                                            <button class="btn-achetier disabled-btn" disabled style="cursor: not-allowed; background-color: #444; color: #999;">ÉPUISÉ</button>
+                                        <?php endif; ?>
+                                        
                                     </div>
                                 </div>
 

@@ -33,7 +33,9 @@ $jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="games-wrapper-catg">
             <div class="games-container">
                 <?php foreach($jeux_catg as $jeu): 
-                    $is_disponible = (strtolower($jeu['etat']) === 'disponible');
+               
+                    $is_disponible = (strtolower(trim($jeu['etat'])) === 'disponible' && (int)$jeu['capacite'] > 0);
+                    
                     $card_class = $is_disponible ? "game-card" : "game-card indisponible";
 
                     $tarif_normal = (float)$jeu['tarif'];
@@ -58,6 +60,7 @@ $jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         'capacite' => $jeu['capacite'],
                     ]), ENT_QUOTES, 'UTF-8');
 
+                 
                     $onclick_attr = $is_disponible
                         ? "onclick=\"openModalFromCard(this)\" data-jeu=\"$jeu_data\""
                         : "";
@@ -66,8 +69,14 @@ $jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
                          style="background-image: url('<?php echo htmlspecialchars($jeu['img_jeu']); ?>');"
                          <?php echo $onclick_attr; ?>>
                         
-                    
-                        <?php if($en_promo): ?>
+                      
+                        <?php if(!$is_disponible): ?>
+                            <div class="game-indispo-overlay">
+                                <div class="game-indispo-title">ÉPUISÉ</div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if($en_promo && $is_disponible): ?>
                             <div class="promo-badge">
                                 <i class="fas fa-fire"></i> PROMO
                             </div>
@@ -75,9 +84,6 @@ $jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <div class="game-title">
                             <?php echo htmlspecialchars($jeu['nom']); ?>
-                            <?php if(!$is_disponible): ?>
-                                <br><span style="color: #ff4d4d; font-size: 13px; font-weight: normal;">Indisponible</span>
-                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
