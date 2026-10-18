@@ -1,8 +1,5 @@
 <?php
-// ============================================================
-// BILLET : document imprimable d'une commande payée
-// (infos client, date de visite, jeux, un billet par personne avec son code)
-// ============================================================
+
 require_once __DIR__ . '/_garde.php';
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -44,9 +41,6 @@ $est_passage = ($cmd['email_client'] === EMAIL_VISITEUR);
 $nom_client  = $est_passage ? 'Visiteur de passage' : trim($cmd['prenom'] . ' ' . $cmd['nom']);
 $date_visite = $cmd['date_visite'] ?: ($billets[0]['date_creation'] ?? $cmd['date_commande']);
 
-// Date de paiement : on prend la première date valide parmi
-// date_paiement -> date_commande -> date de création du 1er billet.
-// (une date vide ou "0000-00-00" est ignorée)
 $date_paiement = null;
 foreach ([$cmd['date_paiement'] ?? null, $cmd['date_commande'] ?? null, $billets[0]['date_creation'] ?? null] as $d) {
     if ($d && strpos((string)$d, '0000-00-00') !== 0 && strtotime((string)$d)) {

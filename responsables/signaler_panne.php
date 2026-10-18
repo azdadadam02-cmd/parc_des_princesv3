@@ -10,7 +10,6 @@ $description_form = '';
 $urgence_form = 'Moyenne';
 $date_prochaine_form = '';
 
-/* ---------- Traitement du formulaire ---------- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_jeu_brut = $_POST['id_jeu'] ?? '';
     $id_jeu_form = is_scalar($id_jeu_brut) ? (string)$id_jeu_brut : '';
@@ -75,7 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-/* ---------- Niveaux d'urgence : valeur => [id, classe couleur, libellé] ---------- */
 $urgences = [
     'Faible'  => ['u_faible',  'is-ok',     '🟢 Faible'],
     'Moyenne' => ['u_moyenne', 'is-warn',   '🟡 Moyenne'],
@@ -89,7 +87,6 @@ entete("Signaler une panne");
     <div class=" col-lg-7">
         <div class="card card-lg">
 
-            <!-- En-tête de la carte -->
             <div class="row">
                 <div class="col-12 text-center">
                     <h2>Signaler un incident technique</h2>
@@ -97,7 +94,6 @@ entete("Signaler une panne");
                 </div>
             </div>
 
-            <!-- Messages -->
             <?php if ($success): ?>
                 <div class="row">
                     <div class="col-12">
@@ -114,7 +110,6 @@ entete("Signaler une panne");
                 </div>
             <?php endif; ?>
 
-            <!-- Formulaire -->
             <form action="" method="post">
                 <?= csrf_champ('signaler_panne') ?>
 

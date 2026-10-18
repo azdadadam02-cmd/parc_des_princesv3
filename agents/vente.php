@@ -1,17 +1,8 @@
-﻿
-Vente · PHP
-<?php
-// ============================================================
-// NOUVELLE VENTE DE BILLETS
-// - le montant est TOUJOURS recalculé côté serveur (le JS n'est qu'un aperçu)
-// - COMMANDE + BILLET(s) + contient sont créés dans UNE transaction
-// - un jeton à usage unique empêche le double envoi (F5, double clic)
-// ============================================================
+﻿<?php
 require_once __DIR__ . '/_garde.php';
 
 $types = types_billets();
 
-// Seuls les jeux « Disponible » peuvent être vendus (la disponibilité est revérifiée à l'enregistrement)
 $jeux = $pdo->query(
     "SELECT id_jeu, nom, capacite, age_min FROM jeu
      WHERE etat = 'Disponible'
@@ -19,7 +10,6 @@ $jeux = $pdo->query(
 )->fetchAll();
 $ids_jeux_ok = array_map('intval', array_column($jeux, 'id_jeu'));
 
-// Clients existants (sans le compte "visiteur de passage")
 $st = $pdo->prepare(
     "SELECT c.email, u.nom, u.prenom, u.telephone
      FROM client c JOIN utilisateur u ON u.email = c.email
@@ -30,7 +20,6 @@ $clients = $st->fetchAll();
 
 $erreurs = [];
 
-// Valeurs du formulaire (pour le réafficher en cas d'erreur)
 $f = [
     'mode_client'   => 'nouveau',
     'client_email'  => '',
@@ -43,9 +32,6 @@ $f = [
     'jeux'          => [],
 ];
 
-/* =========================================================
-   Traitement du formulaire
-   ========================================================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $f['mode_client']  = in_array($_POST['mode_client'] ?? '', ['existant', 'nouveau'], true)
@@ -61,9 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erreurs[] = "Ce formulaire a expiré ou a déjà été envoyé. Vérifiez la liste des ventes avant de recommencer.";
     } else {
 
-        /* ----- 1. Billets demandés ----- */
         $qtes = is_array($_POST['qte'] ?? null) ? $_POST['qte'] : [];
-        $lignes = [];   // [ [type, quantité], ... ]
+        $lignes = [];  
         foreach ($types as $t) {
             $brut = trim((string)($qtes[$t['id_type']] ?? ''));
             $f['qte'][$t['id_type']] = $brut;
@@ -79,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $erreurs[] = "Ajoutez au moins un billet à la vente.";
         }
 
-        /* ----- 3. Jeux (obligatoire, doivent être « Disponible ») ----- */
         $ids_jeux = [];
         foreach ((array)($_POST['jeux'] ?? []) as $id) {
             $id = filter_var($id, FILTER_VALIDATE_INT);
@@ -89,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $f['jeux'] = $ids_jeux;
         if (!$ids_jeux) $erreurs[] = "Sélectionnez au moins un jeu disponible.";
 
-        /* ----- 3b. Nombre de joueurs et âge par rapport aux jeux choisis ----- */
         $nb_joueurs = 0;
         foreach ($lignes as [$t, $q]) $nb_joueurs += $q;
         $age = filter_var($f['age'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 120]]);
@@ -104,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        /* ----- 4. Client (nom, prénom et téléphone à 10 chiffres obligatoires) ----- */
         $email_client = null;
         $creer_client = false;
 
@@ -145,18 +127,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             if (!$erreurs) {
-                // Sans e-mail : on génère une adresse interne (le client ne pourra pas se connecter)
                 $email_client = $f['n_email'] !== '' ? $f['n_email'] : 'client.' . bin2hex(random_bytes(5)) . '@parc.local';
                 $creer_client = true;
             }
         }
 
-        /* ----- 5. Enregistrement (transaction) ----- */
         if (!$erreurs) {
             try {
                 $pdo->beginTransaction();
 
-                // 5a. Disponibilité des jeux, revérifiée avec verrou au moment de l'enregistrement
                 $marques = implode(',', array_fill(0, count($ids_jeux), '?'));
                 $st = $pdo->prepare("SELECT id_jeu, nom FROM jeu WHERE id_jeu IN ($marques) AND etat = 'Disponible' FOR UPDATE");
                 $st->execute($ids_jeux);
@@ -164,7 +143,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new DomainException("Un des jeux sélectionnés n'est plus disponible. Rechargez la page.");
                 }
 
-                // 5b. Client
                 if ($creer_client) {
                     $pdo->prepare("INSERT INTO utilisateur (email, mot_passe, nom, prenom, telephone, role)
                                    VALUES (?, ?, ?, ?, ?, 'client')")
@@ -175,15 +153,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ->execute([$email_client]);
                 }
 
-                // 5c. Montant total (en centimes pour éviter les erreurs d'arrondi)
                 $total_cts = 0;
                 foreach ($lignes as [$t, $q]) {
                     $total_cts += (int)round($t['prix'] * 100) * $q;
                 }
                 $total = $total_cts / 100;
-                $paye  = true;   // la validation de la vente vaut paiement (pas de choix du mode)
-
-                // 5d. Réservation du jour liée à la vente directe
+                $paye  = true;   
                 $pdo->prepare(
                     "INSERT INTO reservation
                         (date_visite, nb_personnes, montant, statut_reservation, email_client, email_agent, origine)
@@ -196,14 +171,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $ins_choisir->execute([$num_reservation, $id_jeu]);
                 }
 
-                // 5e. Commande liée à la réservation
                 $pdo->prepare("INSERT INTO commande
                                    (montant_total, statut_commande, email_client, email_agent, date_paiement, num_reservation)
                                VALUES (?, 'payée', ?, ?, NOW(), ?)")
                     ->execute([$total, $email_client, $email_agent, $num_reservation]);
                 $num_commande = (int)$pdo->lastInsertId();
 
-                // 5f. Un billet par personne (id_billet = identifiant unique du billet)
                 $statut_billet = $paye ? 'valide' : 'en attente';
                 $ins_billet = $pdo->prepare(
                     "INSERT INTO billet (date_fin, type, statut_billet, quantite, prix_unitaire, num_commande, email_agent)
@@ -226,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $pdo->commit();
 
-                csrf_renouveler('vente');   // le formulaire ne peut plus être renvoyé
+                csrf_renouveler('vente');  
                 header('Location: ' . ($paye ? 'Billet.php?id=' . $num_commande . '&ok=1' : 'commandes.php'));
                 exit;
 
@@ -271,10 +244,8 @@ entete("Nouvelle vente", false);
 
     <div class="row">
 
-        <!-- ================= Colonne gauche ================= -->
         <div class="col-12 col-lg-8">
 
-            <!-- ---- Client ---- -->
             <div class="card">
                 <h3 class="card-title">1. Client</h3>
 
@@ -316,7 +287,6 @@ entete("Nouvelle vente", false);
                 </div>
             </div>
 
-            <!-- ---- Billets ---- -->
             <div class="card mt-1">
                 <h3 class="card-title">2. Billets</h3>
                 <?php foreach ($types as $t):
@@ -339,7 +309,6 @@ entete("Nouvelle vente", false);
                 <?php endforeach; ?>
             </div>
 
-            <!-- ---- Jeux ---- -->
             <div class="card mt-1">
                 <h3 class="card-title">3. Jeux et joueurs</h3>
                 <?php if ($jeux): ?>
@@ -364,7 +333,6 @@ entete("Nouvelle vente", false);
             </div>
         </div>
 
-        <!-- ================= Colonne droite : récapitulatif ================= -->
         <div class="col-12 col-lg-4">
             <div class="card">
                 <h3 class="card-title">Récapitulatif</h3>
@@ -388,7 +356,6 @@ entete("Nouvelle vente", false);
   const MAX   = <?= MAX_PAR_LIGNE ?>;
   const fmt   = v => v.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' DH';
 
-  // ----- Total en direct (aperçu : le serveur recalcule toujours) -----
   function recalculer() {
     let total = 0, nb = 0;
     qtes.forEach(inp => {
@@ -406,7 +373,6 @@ entete("Nouvelle vente", false);
   qtes.forEach(i => i.addEventListener('input', recalculer));
   recalculer();
 
-  // ----- Affichage selon le type de client -----
   function modeClient() { return form.querySelector('input[name="mode_client"]:checked').value; }
   function majClient() {
     const m = modeClient();
@@ -415,7 +381,6 @@ entete("Nouvelle vente", false);
   form.querySelectorAll('input[name="mode_client"]').forEach(r => r.addEventListener('change', majClient));
   majClient();
 
-  // ----- Contrôles avant envoi + anti double clic -----
   form.addEventListener('submit', function (e) {
     const msgs = [];
     if (recalculer() === 0) msgs.push("Ajoutez au moins un billet.");

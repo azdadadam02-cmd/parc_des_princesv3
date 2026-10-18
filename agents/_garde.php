@@ -1,5 +1,4 @@
 <?php
-// À inclure en première ligne de CHAQUE page de l'espace agent de vente.
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -10,13 +9,11 @@ const ROLE_AGENT = 'agent';
 $email_agent = $_SESSION['user_email'] ?? $_SESSION['email'] ?? '';
 $role_session = strtolower(trim((string)($_SESSION['user_role'] ?? $_SESSION['role'] ?? '')));
 
-// 1) Il faut être connecté avec le rôle "agent"
 if ($email_agent === '' || $role_session !== ROLE_AGENT) {
     header('Location: ../login.php');
     exit;
 }
 
-// 2) Le compte doit exister dans la table AGENT_DE_VENTE
 $st = $pdo->prepare("SELECT 1 FROM agent_de_vente WHERE email = ?");
 $st->execute([$email_agent]);
 if (!$st->fetch()) {
@@ -24,23 +21,15 @@ if (!$st->fetch()) {
     die("Accès refusé.");
 }
 
-/* =========================================================
-   Constantes métier
-   ========================================================= */
-const MODES_PAIEMENT   = ['espèces', 'carte'];
-const MAX_PAR_LIGNE    = 20;                    // billets max par type et par vente
-const EMAIL_VISITEUR   = 'visiteur@parc.local'; // compte "client de passage"
 
-/* =========================================================
-   Helpers
-   ========================================================= */
+const MODES_PAIEMENT   = ['espèces', 'carte'];
+const MAX_PAR_LIGNE    = 20;                    
+const EMAIL_VISITEUR   = 'visiteur@parc.local'; 
+
 
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
-/**
- * Icône SVG en trait (même style que la sidebar admin).
- * Usage : <?= icone('billet') ?>  — la couleur suit le texte (currentColor).
- */
+
 function icone(string $nom): string
 {
     static $formes = [
@@ -56,34 +45,29 @@ function ucfirst_fr(string $s): string {
 
 function dh($v): string { return number_format((float)$v, 2, ',', ' ') . ' DH'; }
 
-/** Date au format jj/mm/aaaa (ou jj/mm/aaaa hh:mm). */
 function date_fr(?string $d, bool $heure = false): string {
     if (!$d) return '—';
     $t = strtotime($d);
     return $t ? date($heure ? 'd/m/Y H:i' : 'd/m/Y', $t) : '—';
 }
 
-/** Vérifie une date "Y-m-d" stricte ; retourne '' si invalide. */
 function date_valide(string $s): string {
     $d = DateTime::createFromFormat('Y-m-d', $s);
     return ($d && $d->format('Y-m-d') === $s) ? $s : '';
 }
 
-/** Couleur du statut d'une réservation. */
 function classe_statut_reservation(?string $s): string {
     switch (mb_strtolower(trim((string)$s))) {
         case 'confirmée': return 'is-ok';
         case 'payée':     return 'is-info';
         case 'utilisée':  return 'is-muted';
         case 'annulée':   return 'is-danger';
-        default:          return 'is-warn';   // en attente
+        default:          return 'is-warn';  
     }
 }
 
-/**
- * Évalue la validité d'un billet (ligne issue de la requête de billets.php).
- * Retourne [valide(bool), libellé, classe CSS, explication].
- */
+
+ 
 function evaluer_billet(array $b): array {
     $s = mb_strtolower(trim((string)$b['statut_billet']));
     if (mb_strtolower((string)$b['statut_commande']) !== 'payée') {
@@ -101,7 +85,6 @@ function evaluer_billet(array $b): array {
     return [true, 'Valide', 'is-ok', "Billet valide, l'accès peut être autorisé."];
 }
 
-/* ----- Jeton anti-CSRF partagé par les formulaires d'action de la session ----- */
 function csrf_token(string $nom): string {
     if (!isset($_SESSION['csrf_token']) || !is_string($_SESSION['csrf_token']) || $_SESSION['csrf_token'] === '') {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -121,7 +104,6 @@ function csrf_renouveler(string $nom): void {
     unset($_SESSION['csrf_token']);
 }
 
-/** Types de billets et tarifs (DH). Définis ici car la base ne contient pas de table de tarifs. */
 const TYPES_BILLETS = [
     'enfant'  => ['libelle' => 'Enfant',       'prix' =>  50.00, 'validite_jours' => 1],
     'adulte'  => ['libelle' => 'Adulte',       'prix' => 100.00, 'validite_jours' => 1],
@@ -129,7 +111,6 @@ const TYPES_BILLETS = [
     'pass'    => ['libelle' => 'Pass journée', 'prix' => 150.00, 'validite_jours' => 1],
 ];
 
-/** Liste des types de billets (id_type = clé du tableau ci-dessus). */
 function types_billets(): array {
     $out = [];
     foreach (TYPES_BILLETS as $id => $t) {
@@ -138,30 +119,21 @@ function types_billets(): array {
     return $out;
 }
 
-/** Code affiché d'un billet, dérivé de son identifiant unique (id_billet). Ex. 42 -> PP-000042 */
 function code_billet(int $id_billet): string {
     return 'PP-' . str_pad((string)$id_billet, 6, '0', STR_PAD_LEFT);
 }
 
-/** Lit un code saisi ("PP-000042", "pp42" ou "42") et retourne l'id du billet, ou null. */
 function id_depuis_code(string $code): ?int {
     if (!preg_match('/^(?:PP-?)?0*([0-9]{1,9})$/i', trim($code), $m)) return null;
     return (int)$m[1] ?: null;
 }
 
-/* =========================================================
-   Règles métier : état des jeux, échéances, validations
-   ========================================================= */
+
 
 const ETAT_DISPONIBLE   = 'Disponible';
 const ETAT_INDISPONIBLE = 'Indisponible';
 
-/**
- * Maintenance automatique (exécutée à chaque page agent) :
- *  1. commandes en attente dont l'échéance est dépassée => Annulée (+ réservation et billets)
- *  2. réservations dont la date de visite est dépassée   => Terminée (statut « utilisée »)
- *  3. jeux « Indisponible » plus couverts par aucune réservation en ligne active => Disponible
- */
+
 function maj_automatique(PDO $pdo): void {
     try {
         $echue = "c.statut_commande = 'en attente'
@@ -185,7 +157,6 @@ function maj_automatique(PDO $pdo): void {
     }
 }
 
-/** Repasse à Disponible les jeux Indisponible qui ne sont plus réservés (visite incluse). */
 function liberer_jeux(PDO $pdo): void {
     $pdo->prepare(
         "UPDATE jeu j SET j.etat = ?
@@ -197,13 +168,11 @@ function liberer_jeux(PDO $pdo): void {
     )->execute([ETAT_DISPONIBLE, ETAT_INDISPONIBLE]);
 }
 
-/** Téléphone marocain/standard : 10 chiffres (espaces, points et tirets tolérés). Retourne '' si invalide. */
 function telephone_valide(?string $tel): string {
     $t = preg_replace('/[\s.\-]/', '', (string)$tel);
     return preg_match('/^[0-9]{10}$/', $t) ? $t : '';
 }
 
-/** Contrôle des informations d'un client (nom, prénom, téléphone, e-mail). Retourne la liste des erreurs. */
 function erreurs_infos_client(array $u): array {
     $err = [];
     if (trim((string)($u['nom'] ?? '')) === '' || trim((string)($u['prenom'] ?? '')) === '') {
@@ -218,12 +187,10 @@ function erreurs_infos_client(array $u): array {
     return $err;
 }
 
-/** Fin de journée (23:59:59) d'une date/heure SQL. */
 function fin_de_journee(string $dt): string {
     return date('Y-m-d 23:59:59', strtotime($dt));
 }
 
-/** Valide une réservation en ligne : jeux Indisponible, commande « en attente » créée. [ok, message] */
 function valider_reservation(PDO $pdo, int $num, string $agent): array {
     try {
         $pdo->beginTransaction();
@@ -281,7 +248,6 @@ function valider_reservation(PDO $pdo, int $num, string $agent): array {
     }
 }
 
-/** Annule une réservation en ligne non payée et libère les jeux. [ok, message] */
 function annuler_reservation(PDO $pdo, int $num): array {
     try {
         $pdo->beginTransaction();
@@ -311,7 +277,6 @@ function annuler_reservation(PDO $pdo, int $num): array {
     }
 }
 
-/** Encaisse une commande « en attente » (génère les billets si besoin). [ok, message, num_commande] */
 function encaisser_commande(PDO $pdo, int $num_commande, string $agent): array {
     try {
         $pdo->beginTransaction();
@@ -337,7 +302,6 @@ function encaisser_commande(PDO $pdo, int $num_commande, string $agent): array {
         $st = $pdo->prepare("SELECT COUNT(*) FROM billet WHERE num_commande = ?");
         $st->execute([$num_commande]);
         if ((int)$st->fetchColumn() === 0) {
-            // Réservation en ligne : un billet « Pass journée » par personne, valable le jour de visite
             $nb   = max(1, (int)($c['nb_personnes'] ?? 1));
             $prix = round((float)$c['montant_total'] / $nb, 2);
             $debut = date('Y-m-d 00:00:00', strtotime($c['date_visite'] ?? 'today'));
@@ -374,9 +338,7 @@ function _echec(PDO $pdo, string $msg, ?int $id = null): array {
 
 maj_automatique($pdo);
 
-/* =========================================================
-   Squelette HTML commun
-   ========================================================= */
+
 
 function entete(string $titre, bool $afficherTitre = true): void {
     $page = basename($_SERVER['SCRIPT_NAME']);
@@ -399,7 +361,6 @@ function entete(string $titre, bool $afficherTitre = true): void {
     <link rel="stylesheet" href="assets/style.css?v=<?= @filemtime(__DIR__ . '/assets/style.css') ?: time() ?>">
     <link rel="stylesheet" href="assets/agent.css?v=<?= @filemtime(__DIR__ . '/assets/agent.css') ?: time() ?>">
     <style>
-        /* Header agent : logo | menu | compte (email + Déconnexion) sur UNE ligne */
         .agent-header .agent-side--end { flex: 0 0 auto; text-align: right; margin-left: clamp(1.5rem, 4vw, 4rem); }   /* espace entre le menu et l'email */
         .agent-header .header-account {
             display: inline-flex; align-items: center; justify-content: flex-end;

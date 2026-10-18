@@ -5,7 +5,6 @@ $STATUTS = ['en attente', 'confirmée', 'payée', 'utilisée', 'annulée'];
 $JOURS_C = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 $MOIS    = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
-/* ---------- Paramètres (tous validés) ---------- */
 $jeux   = mes_jeux($pdo, $email_resp);
 $ids_ok = array_map('intval', array_column($jeux, 'id_jeu'));
 
@@ -17,7 +16,6 @@ if (!in_array($statut, $STATUTS, true)) $statut = '';
 
 $vue = (($_GET['vue'] ?? 'agenda') === 'liste') ? 'liste' : 'agenda';
 
-/* ---------- Semaine affichée (du lundi au dimanche) ---------- */
 $aujourdhui = date('Y-m-d');
 $sem = $_GET['sem'] ?? '';
 $d = DateTime::createFromFormat('Y-m-d', $sem);
@@ -26,7 +24,7 @@ $d->setTime(0, 0);
 $d->modify('-' . ((int)$d->format('N') - 1) . ' days');
 $lundi    = $d;
 $dimanche = (clone $lundi)->modify('+6 days');
-$fin_sem  = (clone $lundi)->modify('+7 days');   // borne exclusive
+$fin_sem  = (clone $lundi)->modify('+7 days');   
 $prec     = (clone $lundi)->modify('-7 days')->format('Y-m-d');
 $suiv     = (clone $lundi)->modify('+7 days')->format('Y-m-d');
 $semaine_courante = ($aujourdhui >= $lundi->format('Y-m-d') && $aujourdhui <= $dimanche->format('Y-m-d'));
@@ -39,7 +37,6 @@ if ($lundi->format('n') === $dimanche->format('n')) {
                . $dimanche->format('j') . ' ' . $MOIS[$dimanche->format('n') - 1] . ' ' . $dimanche->format('Y');
 }
 
-/* ---------- Requête (toujours limitée à MES jeux) ---------- */
 function charger_reservations(PDO $pdo, string $email, string $debut, ?string $fin, int $id_jeu, string $statut): array {
     $sql = "SELECT r.num_reservation, r.date_visite, r.nb_personnes, r.montant, r.statut_reservation,
                    u.nom, u.prenom,
@@ -72,7 +69,6 @@ function est_annulee(array $r): bool {
 $avenir  = charger_reservations($pdo, $email_resp, $aujourdhui, null, $id_jeu, $statut);
 $semaine = charger_reservations($pdo, $email_resp, $lundi->format('Y-m-d'), $fin_sem->format('Y-m-d'), $id_jeu, $statut);
 
-/* ---------- Indicateurs (réservations à venir) ---------- */
 $actives    = array_values(array_filter($avenir, fn($r) => !est_annulee($r)));
 $nb_avenir  = count($actives);
 $pers_total = array_sum(array_map(fn($r) => (int)$r['nb_personnes'], $actives));
@@ -87,7 +83,6 @@ if ($actives) {
     else $prochaine = $JOURS_C[(int)date('N', strtotime($dv)) - 1] . ' ' . date('d/m', strtotime($dv));
 }
 
-/* ---------- Agenda : regroupement par jour ---------- */
 $par_jour = [];
 foreach ($semaine as $r) $par_jour[substr($r['date_visite'], 0, 10)][] = $r;
 
@@ -112,7 +107,6 @@ $donnees = [
     'valeurs' => array_column($jours, 'pers'),
 ];
 
-/* ---------- URLs en conservant les filtres ---------- */
 $base = ['vue' => $vue, 'id_jeu' => $id_jeu ?: '', 'statut' => $statut, 'sem' => $lundi->format('Y-m-d')];
 $url  = fn(array $o = []) => 'planning.php?' . http_build_query(
     array_filter(array_merge($base, $o), fn($v) => $v !== '' && $v !== null)
@@ -122,7 +116,6 @@ $nb_filtres = ($id_jeu ? 1 : 0) + ($statut !== '' ? 1 : 0);
 entete("Planning", false);
 ?>
 
-<!-- ===== En-tête : titre + vue + filtres ===== -->
 <div class="row align-center justify-between">
     <div class="col-12 col-lg">
         <h1 class="page-title">Planning de vos attractions</h1>
@@ -144,7 +137,6 @@ entete("Planning", false);
     </div>
 </div>
 
-<!-- ===== Panneau de filtres ===== -->
 <form method="get" id="panneauFiltre" class="row" <?= $nb_filtres ? '' : 'hidden' ?>>
     <input type="hidden" name="vue" value="<?= h($vue) ?>">
     <input type="hidden" name="sem" value="<?= h($lundi->format('Y-m-d')) ?>">
@@ -177,7 +169,6 @@ entete("Planning", false);
     </div>
 </form>
 
-<!-- ===== Indicateurs : 1 / 2 / 4 par ligne ===== -->
 <div class="row">
     <div class="col-12 col-sm-6 col-lg-3">
         <div class="kpi kpi--violet">
@@ -207,7 +198,6 @@ entete("Planning", false);
 
 <?php if ($vue === 'agenda'): ?>
 
-    <!-- ===== Navigation de semaine ===== -->
     <div class="row align-center justify-between">
         <div class="col-12 col-sm">
             <span class="week-title">Semaine du <?= h($label_sem) ?></span>
@@ -223,7 +213,6 @@ entete("Planning", false);
         </div>
     </div>
 
-    <!-- ===== 7 jours : 1 / 2 / 7 colonnes selon l'écran ===== -->
     <div class="row">
         <?php foreach ($jours as $jr): ?>
         <div class="col-day">
@@ -277,7 +266,6 @@ entete("Planning", false);
 
 <?php else: ?>
 
-    <!-- ===== Vue liste ===== -->
     <div class="row">
         <div class="col-12">
             <div class="table-wrap">
@@ -317,7 +305,6 @@ entete("Planning", false);
 
 <?php endif; ?>
 
-<!-- ===== Fenêtre de détail d'une réservation ===== -->
 <dialog id="detail">
     <div class="sep-bottom">
         <h3>Réservation n° <span id="d-num"></span></h3>
@@ -338,7 +325,6 @@ entete("Planning", false);
 </dialog>
 
 <script>
-// ----- Bouton Filtrer -----
 const btn = document.getElementById('btnFiltre');
 const panneau = document.getElementById('panneauFiltre');
 btn.addEventListener('click', () => {
@@ -346,7 +332,6 @@ btn.addEventListener('click', () => {
   btn.classList.toggle('is-open', !panneau.hidden);
 });
 
-// ----- Détail d'une réservation -----
 const dlg = document.getElementById('detail');
 function ouvrir(el) {
   const d = el.dataset;

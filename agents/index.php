@@ -1,14 +1,9 @@
 <?php
-// ============================================================
-// DASHBOARD FINANCIER (lecture seule) : recettes, dépenses, bénéfice net
-// Bénéfice net = total des recettes (commandes payées) − total des dépenses.
-// L'agent consulte uniquement : aucune saisie ni modification de dépense.
-// ============================================================
+
 require_once __DIR__ . '/_garde.php';
 
 $erreurs = [];
 
-/* ---------- Période (facultative) ---------- */
 $du = date_valide((string)($_GET['du'] ?? ''));
 $au = date_valide((string)($_GET['au'] ?? ''));
 if ($du && $au && $du > $au) { $du = $au = ''; $erreurs[] = "La date de début doit précéder la date de fin."; }
@@ -18,16 +13,13 @@ $cond_d = ''; $p_d = [];
 if ($du) { $cond_c .= " AND COALESCE(c.date_paiement, c.date_commande) >= ?"; $p_c[] = $du . ' 00:00:00'; $cond_d .= " AND d.date_depense >= ?"; $p_d[] = $du; }
 if ($au) { $cond_c .= " AND COALESCE(c.date_paiement, c.date_commande) < ?";  $p_c[] = date('Y-m-d 00:00:00', strtotime($au . ' +1 day')); $cond_d .= " AND d.date_depense <= ?"; $p_d[] = $au; }
 
-// Courbe : par jour si la période est courte (≤ 62 jours), sinon par mois
 $par_jour = $du && $au && (strtotime($au) - strtotime($du)) <= 62 * 86400;
 $fmt_sql  = $par_jour ? '%Y-%m-%d' : '%Y-%m';
 
-/* ---------- Recettes ---------- */
 $st = $pdo->prepare("SELECT COALESCE(SUM(c.montant_total), 0) FROM commande c WHERE c.statut_commande = 'payée'" . $cond_c);
 $st->execute($p_c);
 $recettes = (float)$st->fetchColumn();
 
-// Le prix d'un billet est réparti à parts égales entre les jeux auxquels il donne accès
 $st = $pdo->prepare(
     "SELECT j.nom, COALESCE(x.ca, 0) AS ca
      FROM jeu j
@@ -53,7 +45,6 @@ $st = $pdo->prepare(
 $st->execute($p_c);
 $rec_periode = $st->fetchAll(PDO::FETCH_KEY_PAIR);
 
-/* ---------- Dépenses ---------- */
 $st = $pdo->prepare("SELECT COALESCE(SUM(d.montant_depense), 0) FROM depense d WHERE 1 = 1" . $cond_d);
 $st->execute($p_d);
 $depenses_total = (float)$st->fetchColumn();
@@ -83,7 +74,6 @@ $depenses = $st->fetchAll();
 
 $benefice = $recettes - $depenses_total;
 
-/* ---------- Billetterie ---------- */
 $bil = $pdo->query(
     "SELECT COALESCE(SUM(b.quantite), 0) AS vendus,
             COALESCE(SUM(CASE WHEN b.statut_billet = 'valide' THEN b.quantite END), 0) AS valides,
@@ -101,7 +91,6 @@ $top_jeux = $pdo->query(
 )->fetchAll();
 $max_top = max(1, (int)($top_jeux[0]['nb'] ?? 1));
 
-/* ---------- Données des graphiques ---------- */
 $periodes = array_unique(array_merge(array_keys($rec_periode), array_keys($dep_periode)));
 sort($periodes);
 $g_jeux_labels = array_column($par_jeu, 'nom');
@@ -245,12 +234,10 @@ entete("Dashboard", false);
         y: {beginAtZero: true, ticks: {color: TEXTE}, grid: {color: GRILLE}, border: {display: false}}
     };
     const vide = (id, vide) => { if (vide) document.getElementById(id).parentNode.insertAdjacentHTML('beforeend', '<p style="text-align:center;color:' + TEXTE + '">Aucune donnée.</p>'); };
-    // Fond sombre derrière chaque graphique (texte clair lisible)
     ['chart-jeux', 'chart-categories', 'chart-periode'].forEach(id => {
         const carte = document.getElementById(id).closest('.card');
         if (carte) { carte.style.background = '#0f0a1e'; carte.style.borderColor = 'rgba(168,85,247,.25)'; carte.style.color = TEXTE; }
     });
-    // Dégradé vertical calculé sur la zone réellement dessinée
     const degrade = (haut, bas) => ctx => {
         const a = ctx.chart.chartArea;
         if (!a) return haut;

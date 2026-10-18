@@ -16,7 +16,6 @@ if ($du && $au && $du > $au) {
     $du = $au = '';
 }
 
-// Catégories disponibles (uniquement celles de MES jeux)
 $st = $pdo->prepare(
     "SELECT DISTINCT d.categorie_depense
      FROM DEPENSE d JOIN JEU j ON j.id_jeu = d.id_jeu
@@ -26,7 +25,6 @@ $st = $pdo->prepare(
 $st->execute([$email_resp]);
 $categories = $st->fetchAll(PDO::FETCH_COLUMN);
 
-// Dépenses filtrées (toujours limitées à mes jeux)
 $sql = "SELECT d.*, j.nom AS nom_jeu
         FROM DEPENSE d JOIN JEU j ON j.id_jeu = d.id_jeu
         WHERE j.email_responsable = ?";
@@ -41,13 +39,11 @@ $st = $pdo->prepare($sql);
 $st->execute($p);
 $deps = $st->fetchAll();
 
-// Indicateurs
 $nb      = count($deps);
 $total   = array_sum(array_column($deps, 'montant_depense'));
 $moyenne = $nb ? $total / $nb : 0;
 $maxdep  = $nb ? max(array_column($deps, 'montant_depense')) : 0;
 
-// Données des graphiques
 $par_jour = $par_cat = $par_jeu = [];
 foreach ($deps as $d) {
     $m = (float)$d['montant_depense'];
@@ -75,7 +71,6 @@ $nb_filtres = ($id_jeu ? 1 : 0) + ($cat !== '' ? 1 : 0) + ($du ? 1 : 0) + ($au ?
 entete("Dépenses", false);
 ?>
 
-<!-- ===== En-tête : titre + bouton Filtrer ===== -->
 <div class="row align-center justify-between">
     <div class="col-12 col-md">
         <h1 class="page-title">Dépenses de vos jeux</h1>
@@ -99,7 +94,6 @@ entete("Dépenses", false);
 </div>
 <?php endif; ?>
 
-<!-- ===== Panneau de filtres (caché tant qu'aucun filtre n'est actif) ===== -->
 <form method="get" id="panneauFiltre" class="row" <?= $nb_filtres ? '' : 'hidden' ?>>
     <div class="col-12">
         <div class="filter-panel">
@@ -138,7 +132,6 @@ entete("Dépenses", false);
     </div>
 </form>
 
-<!-- ===== Indicateurs : 1 / 2 / 4 par ligne ===== -->
 <div class="row">
     <div class="col-12 col-sm-6 col-lg-3">
         <div class="kpi kpi--violet">
@@ -167,7 +160,7 @@ entete("Dépenses", false);
 </div>
 
 <?php if ($deps): ?>
-<!-- ===== Graphiques ===== -->
+
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -193,7 +186,6 @@ entete("Dépenses", false);
 </div>
 <?php endif; ?>
 
-<!-- ===== Tableau ===== -->
 <div class="row">
     <div class="col-12">
         <div class="table-wrap">
@@ -235,7 +227,6 @@ entete("Dépenses", false);
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-// ----- Bouton Filtrer -----
 const btn = document.getElementById('btnFiltre');
 const panneau = document.getElementById('panneauFiltre');
 btn.addEventListener('click', () => {
@@ -250,7 +241,6 @@ panneau.addEventListener('submit', (e) => {
   }
 });
 
-// ----- Graphiques -----
 const D = <?= $J($donnees) ?>;
 
 if (document.getElementById('chLigne')) {
@@ -264,7 +254,6 @@ if (document.getElementById('chLigne')) {
     const palette = ['#4f46e5', '#22d3ee', '#c471f5', '#10b981', '#f59e0b', '#f43f5e'];
     const fmt = (v) => Number(v).toLocaleString('fr-FR', {minimumFractionDigits: 2}) + ' DH';
 
-    // Courbe : évolution par jour
     const ctxL = document.getElementById('chLigne').getContext('2d');
     const gL = ctxL.createLinearGradient(0, 0, 0, 300);
     gL.addColorStop(0, 'rgba(129,140,248,.55)');
@@ -282,7 +271,6 @@ if (document.getElementById('chLigne')) {
       }
     });
 
-    // Donut : par catégorie
     new Chart(document.getElementById('chDonut'), {
       type: 'doughnut',
       data: { labels: D.catL, datasets: [{ data: D.catV, backgroundColor: palette, borderWidth: 0 }] },
@@ -292,7 +280,6 @@ if (document.getElementById('chLigne')) {
       }
     });
 
-    // Barres : par jeu
     const ctxB = document.getElementById('chBarres').getContext('2d');
     const gB = ctxB.createLinearGradient(0, 0, 0, 300);
     gB.addColorStop(0, '#818cf8');

@@ -1,9 +1,5 @@
 <?php
-// ============================================================
-// COMMANDES : réservations validées converties + ventes directes au guichet
-// Encaissement (espèces / carte) => commande « payée » => redirection vers Billet.php
-// Les commandes dont l'échéance est dépassée sont annulées automatiquement (_garde.php).
-// ============================================================
+
 require_once __DIR__ . '/_garde.php';
 
 const STATUTS_COMMANDE = ['en attente' => 'En attente', 'payée' => 'Payée', 'annulée' => 'Annulée'];

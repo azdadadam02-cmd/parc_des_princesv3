@@ -61,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Derniers billets vendus par l'agent connecté.
 $stmtDerniers = $pdo->prepare("
     SELECT id_billet, type, statut_billet, date_creation, date_fin
     FROM billet
@@ -72,16 +71,13 @@ $stmtDerniers = $pdo->prepare("
 $stmtDerniers->execute([$email_agent]);
 $derniers_billets = $stmtDerniers->fetchAll();
 
-// =========================================================================
-// 3. AFFICHAGE HTML (Même design d'origine)
-// =========================================================================
+
 entete("Vérifier un billet", false);
 ?>
 
-<!-- Style CSS intégré pour respecter le thème existant. -->
 <style>
     body {
-        background-color: #080710; /* Couleur de fond sombre globale */
+        background-color: #080710; 
         color: #ffffff;
         font-family: Arial, sans-serif;
     }
@@ -193,7 +189,6 @@ entete("Vérifier un billet", false);
             </div>
         <?php endif; ?>
 
-        <!-- Vérification et consommation du billet. -->
         <form method="POST" action="" class="search-box">
             <?= csrf_champ('billet') ?>
             <input type="text" name="code_billet" class="search-input" placeholder="PP-000042"
@@ -203,7 +198,6 @@ entete("Vérifier un billet", false);
 
         <h2 class="page-title" style="margin-bottom: 20px;">Derniers billets que j'ai vendus</h2>
         
-        <!-- Tableau des derniers billets -->
         <div class="table-container">
             <table class="custom-table">
                 <thead>
