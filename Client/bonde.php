@@ -18,7 +18,12 @@ $details = null;
 $tickets = []; 
 
 if ($type === 'commande') {
-    $stmt = $pdo->prepare("SELECT * FROM COMMANDE WHERE num_commande = ? AND email_client = ?");
+    $stmt = $pdo->prepare("
+        SELECT c.*, u.telephone 
+        FROM COMMANDE c 
+        LEFT JOIN UTILISATEUR u ON u.email = c.email_client 
+        WHERE c.num_commande = ? AND c.email_client = ?
+    ");
     $stmt->execute([$id, $email_client]);
     $details = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -33,6 +38,26 @@ if ($type === 'commande') {
     $titre_page = "Bon de Commande";
     $couleur_theme = "#5a55ff";
 } 
+elseif ($type === 'reservation') {
+    $stmt = $pdo->prepare("
+        SELECT r.*, u.telephone 
+        FROM RESERVATION r 
+        LEFT JOIN UTILISATEUR u ON u.email = r.email_client 
+        WHERE r.num_reservation = ? AND r.email_client = ?
+    ");
+    $stmt->execute([$id, $email_client]);
+    $details = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    $stmt_t = $pdo->prepare("SELECT j.nom, c.quantite, c.prix_unitaire, (c.quantite * c.prix_unitaire) as sous_total 
+                             FROM choisir c 
+                             JOIN JEU j ON c.id_jeu = j.id_jeu 
+                             WHERE c.num_reservation = ?");
+    $stmt_t->execute([$id]);
+    $tickets = $stmt_t->fetchAll(PDO::FETCH_ASSOC);
+
+    $titre_page = "Bon de Réservation";
+    $couleur_theme = "#ff4d4d";
+}
 elseif ($type === 'reservation') {
     $stmt = $pdo->prepare("SELECT * FROM RESERVATION WHERE num_reservation = ? AND email_client = ?");
     $stmt->execute([$id, $email_client]);
