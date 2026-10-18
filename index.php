@@ -191,14 +191,17 @@ require __DIR__ . '/admin/includes/db.php';
             </div>
         </div>
     </section>
-    <section class = "section2-2">
-        <a href="Client/catg5.php" class="btn-browse-CAT5">DÉCOUVRIR</a> 
-    </section>
+    
 
     <section class="section3">
         <a href="Client/catg2.php" class="btn-browse-CAT1">DÉCOUVRIR</a>   
     </section>
-
+    <section class = "section2-2">
+        <a href="Client/catg5.php" class="btn-browse-CAT5">DÉCOUVRIR</a> 
+    </section>
+    <section class="section6">
+        <a href="Client/catg4.php" class="btn-browse-CAT4">DÉCOUVRIR</a>
+    </section>
     <section class="section4">
         <a href="Client/catg1.php" class="btn-browse-CAT2">DÉCOUVRIR</a>
     </section>
@@ -207,9 +210,7 @@ require __DIR__ . '/admin/includes/db.php';
         <a href="Client/catg3.php" class="btn-browse-CAT3">DÉCOUVRIR</a>
     </section>
 
-    <section class="section6">
-        <a href="Client/catg4.php" class="btn-browse-CAT4">DÉCOUVRIR</a>
-    </section>
+    
 
     <script src="Client/assets/js/index.js?v=<?php echo time(); ?>"></script>
 </body>
