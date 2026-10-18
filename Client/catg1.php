@@ -5,7 +5,7 @@ require 'includes/db.php';
 $id_categorie_actuelle = 1;
 $stmt = $pdo->prepare("SELECT * FROM JEU WHERE id_categorie = ?");
 $stmt->execute([$id_categorie_actuelle]);
-$jeux_catg1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -35,6 +35,7 @@ $jeux_catg1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     $is_disponible = (strtolower($jeu['etat']) === 'disponible');
                     $card_class = $is_disponible ? "game-card" : "game-card indisponible";
 
+                  
                     $tarif_normal = (float)$jeu['tarif'];
                     $tarif_promo = $jeu['tarif_promo'] ?? null;
                     $en_promo = (
@@ -65,7 +66,7 @@ $jeux_catg1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
                          style="background-image: url('<?php echo htmlspecialchars($jeu['img_jeu']); ?>');"
                          <?php echo $onclick_attr; ?>>
                         
-                     
+                       
                         <?php if($en_promo): ?>
                             <div class="promo-badge">
                                 <i class="fas fa-fire"></i> PROMO
