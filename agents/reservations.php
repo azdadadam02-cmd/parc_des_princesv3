@@ -1,5 +1,8 @@
 <?php
+<<<<<<< HEAD
 
+=======
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 require_once __DIR__ . '/_garde.php';
 
 const LIBELLES_STATUT = [

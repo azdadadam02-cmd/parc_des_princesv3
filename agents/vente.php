@@ -55,9 +55,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_ok('vente')) {
         $erreurs[] = "Ce formulaire a expiré ou a déjà été envoyé. Vérifiez la liste des ventes avant de recommencer.";
     } else {
+<<<<<<< HEAD
         $qtes = is_array($_POST['qte'] ?? null) ? $_POST['qte'] : [];
         $lignes = [];
 
+=======
+
+        $qtes = is_array($_POST['qte'] ?? null) ? $_POST['qte'] : [];
+        $lignes = [];  
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
         foreach ($types as $t) {
             $brut = trim((string) ($qtes[$t['id_type']] ?? ''));
             $f['qte'][$t['id_type']] = $brut;
@@ -102,10 +108,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ids_jeux = array_values($ids_jeux);
         $f['jeux'] = $ids_jeux;
 
+<<<<<<< HEAD
         if (!$ids_jeux) {
             $erreurs[] = "Sélectionnez au moins un jeu disponible.";
         }
 
+=======
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
         $nb_joueurs = 0;
 
         foreach ($lignes as [$t, $q]) {
@@ -217,10 +226,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (!$erreurs) {
+<<<<<<< HEAD
                 $email_client = $f['n_email'] !== ''
                     ? $f['n_email']
                     : 'client.' . bin2hex(random_bytes(5)) . '@parc.local';
 
+=======
+                $email_client = $f['n_email'] !== '' ? $f['n_email'] : 'client.' . bin2hex(random_bytes(5)) . '@parc.local';
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
                 $creer_client = true;
             }
         }
@@ -229,6 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $pdo->beginTransaction();
 
+<<<<<<< HEAD
                 $marques = implode(
                     ',',
                     array_fill(0, count($ids_jeux), '?')
@@ -242,6 +256,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      FOR UPDATE"
                 );
 
+=======
+                $marques = implode(',', array_fill(0, count($ids_jeux), '?'));
+                $st = $pdo->prepare("SELECT id_jeu, nom FROM jeu WHERE id_jeu IN ($marques) AND etat = 'Disponible' FOR UPDATE");
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
                 $st->execute($ids_jeux);
 
                 if (count($st->fetchAll()) !== count($ids_jeux)) {
@@ -284,8 +302,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $total = $total_cts / 100;
+<<<<<<< HEAD
                 $paye = true;
 
+=======
+                $paye  = true;   
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
                 $pdo->prepare(
                     "INSERT INTO reservation (
                         date_visite,
@@ -315,6 +337,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $ins_choisir->execute([$num_reservation, $id_jeu]);
                 }
 
+<<<<<<< HEAD
                 $pdo->prepare(
                     "INSERT INTO commande (
                         montant_total,
@@ -332,6 +355,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
 
                 $num_commande = (int) $pdo->lastInsertId();
+=======
+                $pdo->prepare("INSERT INTO commande
+                                   (montant_total, statut_commande, email_client, email_agent, date_paiement, num_reservation)
+                               VALUES (?, 'payée', ?, ?, NOW(), ?)")
+                    ->execute([$total, $email_client, $email_agent, $num_reservation]);
+                $num_commande = (int)$pdo->lastInsertId();
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 
                 $statut_billet = $paye ? 'valide' : 'en attente';
 
@@ -380,7 +410,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $pdo->commit();
 
+<<<<<<< HEAD
                 csrf_renouveler('vente');
+=======
+                csrf_renouveler('vente');  
+                header('Location: ' . ($paye ? 'Billet.php?id=' . $num_commande . '&ok=1' : 'commandes.php'));
+                exit;
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 
                 header(
                     'Location: ' . (
@@ -437,12 +473,103 @@ entete("Nouvelle vente", false);
     </div>
 <?php else: ?>
 
+<<<<<<< HEAD
     <?php if ($erreurs): ?>
         <div class="row">
             <div class="col-12">
                 <div class="alert alert-danger">
                     <?php foreach ($erreurs as $e): ?>
                         <div><?= h($e) ?></div>
+=======
+<?php if ($erreurs): ?>
+<div class="row"><div class="col-12">
+    <div class="alert alert-danger">
+        <?php foreach ($erreurs as $e): ?><div><?= h($e) ?></div><?php endforeach; ?>
+    </div>
+</div></div>
+<?php endif; ?>
+
+<form method="post" id="formVente" novalidate>
+    <?= csrf_champ('vente') ?>
+
+    <div class="row">
+
+        <div class="col-12 col-lg-8">
+
+            <div class="card">
+                <h3 class="card-title">1. Client</h3>
+
+                <div class="row">
+                    <div class="col-12 col-md-6"><label class="choice"><input type="radio" name="mode_client" value="nouveau" <?= $f['mode_client'] === 'nouveau' ? 'checked' : '' ?>><span class="choice-label">Nouveau client</span></label></div>
+                    <div class="col-12 col-md-6"><label class="choice"><input type="radio" name="mode_client" value="existant" <?= $f['mode_client'] === 'existant' ? 'checked' : '' ?>><span class="choice-label">Client existant</span></label></div>
+                </div>
+
+                <div class="client-panel mt-1" data-mode="existant" hidden>
+                    <label class="form-label" for="client_email">Rechercher (nom ou e-mail)</label>
+                    <input type="text" name="client_email" id="client_email" class="form-control" list="liste-clients"
+                           value="<?= h($f['client_email']) ?>" placeholder="Tapez pour rechercher…" autocomplete="off">
+                    <datalist id="liste-clients">
+                        <?php foreach ($clients as $c): ?>
+                            <option value="<?= h($c['email']) ?>"><?= h($c['nom'] . ' ' . $c['prenom'] . ($c['telephone'] ? ' — ' . $c['telephone'] : '')) ?></option>
+                        <?php endforeach; ?>
+                    </datalist>
+                </div>
+
+                <div class="client-panel mt-1" data-mode="nouveau" hidden>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="n_nom">Nom *</label>
+                            <input type="text" name="n_nom" id="n_nom" class="form-control" maxlength="50" value="<?= h($f['n_nom']) ?>">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="n_prenom">Prénom *</label>
+                            <input type="text" name="n_prenom" id="n_prenom" class="form-control" maxlength="50" value="<?= h($f['n_prenom']) ?>">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="n_tel">Téléphone (10 chiffres) *</label>
+                            <input type="tel" name="n_tel" id="n_tel" class="form-control" maxlength="20" inputmode="numeric" placeholder="0612345678" value="<?= h($f['n_tel']) ?>">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label" for="n_email">E-mail (facultatif)</label>
+                            <input type="email" name="n_email" id="n_email" class="form-control" maxlength="100" value="<?= h($f['n_email']) ?>">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-1">
+                <h3 class="card-title">2. Billets</h3>
+                <?php foreach ($types as $t):
+                    $info = ((int)$t['validite_jours'] > 1 ? 'Valable ' . (int)$t['validite_jours'] . ' jours' : 'Valable le jour de la vente')
+                          . ($t['usage_unique'] ? ' · entrée unique' : ' · entrées multiples');
+                ?>
+                <div class="ticket-line">
+                    <div>
+                        <span class="ticket-name"><?= h($t['libelle']) ?> — <?= dh($t['prix']) ?></span>
+                        <span class="ticket-info"><?= h($info) ?></span>
+                    </div>
+                    <div class="ticket-qty">
+                        <input type="number" class="form-control qte" name="qte[<?= h($t['id_type']) ?>]"
+                               min="0" max="<?= MAX_PAR_LIGNE ?>" step="1" inputmode="numeric"
+                               data-prix="<?= h($t['prix']) ?>" placeholder="0"
+                               value="<?= h($f['qte'][$t['id_type']] ?? '') ?>" aria-label="Quantité <?= h($t['libelle']) ?>">
+                        <span class="ticket-sub">0,00 DH</span>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="card mt-1">
+                <h3 class="card-title">3. Jeux et joueurs</h3>
+                <?php if ($jeux): ?>
+                <div class="check-grid">
+                    <?php foreach ($jeux as $j): ?>
+                        <label class="check-item">
+                            <input type="checkbox" name="jeux[]" value="<?= (int)$j['id_jeu'] ?>" <?= in_array((int)$j['id_jeu'], $f['jeux'], true) ? 'checked' : '' ?>>
+                            <?= h($j['nom']) ?>
+                            <small class="text-muted">(<?= $j['capacite'] !== null ? (int)$j['capacite'] . ' max' : 'illimité' ?><?= $j['age_min'] ? ', ' . (int)$j['age_min'] . '+ ans' : '' ?>)</small>
+                        </label>
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -690,9 +817,15 @@ entete("Nouvelle vente", false);
                 </div>
             </div>
 
+<<<<<<< HEAD
             <div class="col-12 col-lg-4">
                 <div class="card">
                     <h3 class="card-title">Récapitulatif</h3>
+=======
+        <div class="col-12 col-lg-4">
+            <div class="card">
+                <h3 class="card-title">Récapitulatif</h3>
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 
                     <div class="total-box">
                         <span class="total-label">Total à payer</span>
@@ -719,6 +852,7 @@ entete("Nouvelle vente", false);
             const qtes = form.querySelectorAll('.qte');
             const MAX = <?= MAX_PAR_LIGNE ?>;
 
+<<<<<<< HEAD
             const fmt = v => v.toLocaleString('fr-FR', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
@@ -834,6 +968,50 @@ entete("Nouvelle vente", false);
             });
         })();
     </script>
+=======
+  function recalculer() {
+    let total = 0, nb = 0;
+    qtes.forEach(inp => {
+      let q = parseInt(inp.value, 10);
+      if (isNaN(q) || q < 0) q = 0;
+      if (q > MAX) q = MAX;
+      const sous = q * parseFloat(inp.dataset.prix);
+      inp.closest('.ticket-line').querySelector('.ticket-sub').textContent = fmt(sous);
+      total += sous; nb += q;
+    });
+    document.getElementById('total').textContent = fmt(total);
+    document.getElementById('nbBillets').textContent = nb + (nb > 1 ? ' billets' : ' billet');
+    return nb;
+  }
+  qtes.forEach(i => i.addEventListener('input', recalculer));
+  recalculer();
+
+  function modeClient() { return form.querySelector('input[name="mode_client"]:checked').value; }
+  function majClient() {
+    const m = modeClient();
+    form.querySelectorAll('.client-panel').forEach(p => p.hidden = (p.dataset.mode !== m));
+  }
+  form.querySelectorAll('input[name="mode_client"]').forEach(r => r.addEventListener('change', majClient));
+  majClient();
+
+  form.addEventListener('submit', function (e) {
+    const msgs = [];
+    if (recalculer() === 0) msgs.push("Ajoutez au moins un billet.");
+    if (!form.querySelector('input[name="jeux[]"]:checked')) msgs.push("Sélectionnez au moins un jeu.");
+    if (form.age.value === '') msgs.push("Indiquez l'âge du plus jeune joueur.");
+    const m = modeClient();
+    if (m === 'existant' && !form.client_email.value.trim()) msgs.push("Sélectionnez un client.");
+    if (m === 'nouveau') {
+      if (!form.n_nom.value.trim() || !form.n_prenom.value.trim()) msgs.push("Nom et prénom obligatoires.");
+      if (!/^[0-9]{10}$/.test(form.n_tel.value.replace(/[\s.\-]/g, ''))) msgs.push("Téléphone : 10 chiffres attendus.");
+    }
+    if (msgs.length) { e.preventDefault(); alert(msgs.join("\n")); return; }
+    const b = document.getElementById('btnValider');
+    b.disabled = true; b.textContent = 'Enregistrement…';
+  });
+})();
+</script>
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 
 <?php endif; ?>
 

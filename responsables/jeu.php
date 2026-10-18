@@ -195,7 +195,6 @@ entete("Détails - " . $jeu['nom']);
                                 <td><?= h($m['date_prochaine_maintenance'] ?? '-') ?></td>
                                 <td>
                                     <?php if (mb_strtolower(trim((string)$m['etat_intervention'])) !== 'terminée'): ?>
-                                        <!-- Panne encore ouverte : on saisit le coût -> dépense + jeu disponible -->
                                         <form method="post">
                                             <?= csrf_champ('cloturer_maintenance') ?>
                                             <input type="hidden" name="action" value="cloturer">

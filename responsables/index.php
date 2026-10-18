@@ -1,10 +1,14 @@
 <?php
+<<<<<<< HEAD
 
 
 
 require_once __DIR__ . '/_garde.php';
 
 
+=======
+require_once __DIR__ . '/_garde.php';
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 $st = $pdo->prepare(
     "SELECT j.id_jeu, j.nom, j.etat, j.capacite, j.tarif, j.duree_session, c.nom_categorie
      FROM JEU j

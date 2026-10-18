@@ -24,7 +24,7 @@ $d->setTime(0, 0);
 $d->modify('-' . ((int)$d->format('N') - 1) . ' days');
 $lundi    = $d;
 $dimanche = (clone $lundi)->modify('+6 days');
-$fin_sem  = (clone $lundi)->modify('+7 days');   // borne exclusive
+$fin_sem  = (clone $lundi)->modify('+7 days');   
 $prec     = (clone $lundi)->modify('-7 days')->format('Y-m-d');
 $suiv     = (clone $lundi)->modify('+7 days')->format('Y-m-d');
 $semaine_courante = ($aujourdhui >= $lundi->format('Y-m-d') && $aujourdhui <= $dimanche->format('Y-m-d'));

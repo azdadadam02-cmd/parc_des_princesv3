@@ -132,8 +132,11 @@ entete("Dépenses", false);
     </div>
 </form>
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 <div class="row">
     <div class="col-12 col-sm-6 col-lg-3">
         <div class="kpi kpi--violet">
@@ -162,6 +165,10 @@ entete("Dépenses", false);
 </div>
 
 <?php if ($deps): ?>
+<<<<<<< HEAD
+=======
+
+>>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 <div class="row">
     <div class="col-12">
         <div class="card">
