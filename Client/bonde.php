@@ -18,6 +18,7 @@ $details = null;
 $tickets = []; 
 
 if ($type === 'commande') {
+    // نجيبو تفاصيل الكوموند
     $stmt = $pdo->prepare("
         SELECT c.*, u.telephone 
         FROM COMMANDE c 
@@ -27,18 +28,38 @@ if ($type === 'commande') {
     $stmt->execute([$id, $email_client]);
     $details = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    $stmt_t = $pdo->prepare("SELECT j.nom, b.quantite, b.prix_unitaire, (b.quantite * b.prix_unitaire) as sous_total 
-                             FROM BILLET b 
-                             JOIN contient c ON b.id_billet = c.id_billet 
-                             JOIN JEU j ON c.id_jeu = j.id_jeu 
-                             WHERE b.num_commande = ?");
-    $stmt_t->execute([$id]);
-    $tickets = $stmt_t->fetchAll(PDO::FETCH_ASSOC);
+    if ($details) {
+        // إذا كانت الكوموند تخلصات (payée)، الألعاب غايكونو فـ جدول BILLET
+        if (strtolower($details['statut_commande']) === 'payée') {
+            $stmt_t = $pdo->prepare("
+                SELECT j.nom, b.quantite, b.prix_unitaire, (b.quantite * b.prix_unitaire) as sous_total 
+                FROM BILLET b 
+                JOIN contient c ON b.id_billet = c.id_billet 
+                JOIN JEU j ON c.id_jeu = j.id_jeu 
+                WHERE b.num_commande = ?
+            ");
+            $stmt_t->execute([$id]);
+            $tickets = $stmt_t->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            // إذا كانت باقا en attente، الألعاب مازالين غير فـ جدول choisir من خلال num_reservation
+            if (!empty($details['num_reservation'])) {
+                $stmt_t = $pdo->prepare("
+                    SELECT j.nom, c.quantite, c.prix_unitaire, (c.quantite * c.prix_unitaire) as sous_total 
+                    FROM choisir c 
+                    JOIN JEU j ON c.id_jeu = j.id_jeu 
+                    WHERE c.num_reservation = ?
+                ");
+                $stmt_t->execute([$details['num_reservation']]);
+                $tickets = $stmt_t->fetchAll(PDO::FETCH_ASSOC);
+            }
+        }
+    }
 
     $titre_page = "Bon de Commande";
     $couleur_theme = "#5a55ff";
 } 
 elseif ($type === 'reservation') {
+    // نجيبو تفاصيل الرزرفاسيون
     $stmt = $pdo->prepare("
         SELECT r.*, u.telephone 
         FROM RESERVATION r 
@@ -48,25 +69,13 @@ elseif ($type === 'reservation') {
     $stmt->execute([$id, $email_client]);
     $details = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    $stmt_t = $pdo->prepare("SELECT j.nom, c.quantite, c.prix_unitaire, (c.quantite * c.prix_unitaire) as sous_total 
-                             FROM choisir c 
-                             JOIN JEU j ON c.id_jeu = j.id_jeu 
-                             WHERE c.num_reservation = ?");
-    $stmt_t->execute([$id]);
-    $tickets = $stmt_t->fetchAll(PDO::FETCH_ASSOC);
-
-    $titre_page = "Bon de Réservation";
-    $couleur_theme = "#ff4d4d";
-}
-elseif ($type === 'reservation') {
-    $stmt = $pdo->prepare("SELECT * FROM RESERVATION WHERE num_reservation = ? AND email_client = ?");
-    $stmt->execute([$id, $email_client]);
-    $details = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    $stmt_t = $pdo->prepare("SELECT j.nom, c.quantite, c.prix_unitaire, (c.quantite * c.prix_unitaire) as sous_total 
-                             FROM choisir c 
-                             JOIN JEU j ON c.id_jeu = j.id_jeu 
-                             WHERE c.num_reservation = ?");
+    // نجيبو الألعاب من جدول choisir
+    $stmt_t = $pdo->prepare("
+        SELECT j.nom, c.quantite, c.prix_unitaire, (c.quantite * c.prix_unitaire) as sous_total 
+        FROM choisir c 
+        JOIN JEU j ON c.id_jeu = j.id_jeu 
+        WHERE c.num_reservation = ?
+    ");
     $stmt_t->execute([$id]);
     $tickets = $stmt_t->fetchAll(PDO::FETCH_ASSOC);
 
