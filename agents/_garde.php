@@ -350,45 +350,6 @@ function valider_reservation(PDO $pdo, int $num, string $agent): array
         }
 
         $st = $pdo->prepare(
-            "SELECT j.id_jeu, j.nom, j.etat, j.capacite
-             FROM choisir ch
-             JOIN jeu j ON j.id_jeu = ch.id_jeu
-             WHERE ch.num_reservation = ?
-             FOR UPDATE"
-        );
-
-        $st->execute([$num]);
-        $jeux = $st->fetchAll();
-
-        if (!$jeux) {
-            return _echec($pdo, "Aucun jeu n'est associé à cette réservation.");
-        }
-
-        foreach ($jeux as $j) {
-            if (
-                mb_strtolower($j['etat'])
-                !== mb_strtolower(ETAT_DISPONIBLE)
-            ) {
-                return _echec(
-                    $pdo,
-                    "Le jeu « {$j['nom']} » n'est pas disponible (état : {$j['etat']})."
-                );
-            }
-
-            if (
-                $j['capacite'] !== null &&
-                (int) $r['nb_personnes'] > (int) $j['capacite']
-            ) {
-                return _echec(
-                    $pdo,
-                    "Le jeu « {$j['nom']} » accepte au maximum "
-                    . (int) $j['capacite']
-                    . " joueurs."
-                );
-            }
-        }
-
-        $st = $pdo->prepare(
             "SELECT 1
              FROM commande
              WHERE num_reservation = ?
