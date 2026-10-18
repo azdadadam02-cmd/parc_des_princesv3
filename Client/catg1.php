@@ -5,7 +5,7 @@ require 'includes/db.php';
 $id_categorie_actuelle = 1;
 $stmt = $pdo->prepare("SELECT * FROM JEU WHERE id_categorie = ?");
 $stmt->execute([$id_categorie_actuelle]);
-$jeux_catg1 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$jeux_catg = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
