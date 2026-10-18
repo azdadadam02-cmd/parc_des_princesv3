@@ -8,7 +8,10 @@ require_once __DIR__ . '/../admin/includes/db.php';
 const ROLE_AGENT = 'agent';
 
 $email_agent = $_SESSION['user_email'] ?? $_SESSION['email'] ?? '';
-$role_session = strtolower(trim((string) ($_SESSION['user_role'] ?? $_SESSION['role'] ?? '')));
+
+$role_session = strtolower(
+    trim((string) ($_SESSION['user_role'] ?? $_SESSION['role'] ?? ''))
+);
 
 if ($email_agent === '' || $role_session !== ROLE_AGENT) {
     header('Location: ../login.php');
@@ -23,14 +26,14 @@ if (!$st->fetch()) {
     die("Accès refusé.");
 }
 
+const MODES_PAIEMENT = ['espèces', 'carte'];
+const MAX_PAR_LIGNE = 20;
+const EMAIL_VISITEUR = 'visiteur@parc.local';
 
-const MODES_PAIEMENT   = ['espèces', 'carte'];
-const MAX_PAR_LIGNE    = 20;                    
-const EMAIL_VISITEUR   = 'visiteur@parc.local'; 
-
-
-function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
-
+function h($v): string
+{
+    return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
+}
 
 function icone(string $nom): string
 {
@@ -40,7 +43,9 @@ function icone(string $nom): string
 
     $d = $formes[$nom] ?? '';
 
-    return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $d . '</svg>';
+    return '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        . $d
+        . '</svg>';
 }
 
 function ucfirst_fr(string $s): string
@@ -53,36 +58,55 @@ function dh($v): string
     return number_format((float) $v, 2, ',', ' ') . ' DH';
 }
 
-function date_fr(?string $d, bool $heure = false): string {
-    if (!$d) return '—';
+function date_fr(?string $d, bool $heure = false): string
+{
+    if (!$d) {
+        return '—';
+    }
 
     $t = strtotime($d);
 
     return $t ? date($heure ? 'd/m/Y H:i' : 'd/m/Y', $t) : '—';
 }
 
-function date_valide(string $s): string {
+function date_valide(string $s): string
+{
     $d = DateTime::createFromFormat('Y-m-d', $s);
 
     return ($d && $d->format('Y-m-d') === $s) ? $s : '';
 }
 
-function classe_statut_reservation(?string $s): string {
-    switch (mb_strtolower(trim((string)$s))) {
-        case 'confirmée': return 'is-ok';
-        case 'payée':     return 'is-info';
-        case 'utilisée':  return 'is-muted';
-        case 'annulée':   return 'is-danger';
-        default:          return 'is-warn';  
+function classe_statut_reservation(?string $s): string
+{
+    switch (mb_strtolower(trim((string) $s))) {
+        case 'confirmée':
+            return 'is-ok';
+
+        case 'payée':
+            return 'is-info';
+
+        case 'utilisée':
+            return 'is-muted';
+
+        case 'annulée':
+            return 'is-danger';
+
+        default:
+            return 'is-warn';
     }
 }
 
+function evaluer_billet(array $b): array
+{
+    $s = mb_strtolower(trim((string) $b['statut_billet']));
 
- 
-function evaluer_billet(array $b): array {
-    $s = mb_strtolower(trim((string)$b['statut_billet']));
-    if (mb_strtolower((string)$b['statut_commande']) !== 'payée') {
-        return [false, 'Non payé', 'is-danger', "La commande associée n'est pas payée."];
+    if (mb_strtolower((string) $b['statut_commande']) !== 'payée') {
+        return [
+            false,
+            'Non payé',
+            'is-danger',
+            "La commande associée n'est pas payée."
+        ];
     }
 
     if ($s === 'annulé') {
@@ -120,8 +144,13 @@ function evaluer_billet(array $b): array {
     ];
 }
 
-function csrf_token(string $nom): string {
-    if (!isset($_SESSION['csrf_token']) || !is_string($_SESSION['csrf_token']) || $_SESSION['csrf_token'] === '') {
+function csrf_token(string $nom): string
+{
+    if (
+        !isset($_SESSION['csrf_token']) ||
+        !is_string($_SESSION['csrf_token']) ||
+        $_SESSION['csrf_token'] === ''
+    ) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 
@@ -130,7 +159,9 @@ function csrf_token(string $nom): string {
 
 function csrf_champ(string $nom): string
 {
-    return '<input type="hidden" name="csrf" value="' . h(csrf_token($nom)) . '">';
+    return '<input type="hidden" name="csrf" value="'
+        . h(csrf_token($nom))
+        . '">';
 }
 
 function csrf_ok(string $nom): bool
@@ -169,7 +200,8 @@ const TYPES_BILLETS = [
     ],
 ];
 
-function types_billets(): array {
+function types_billets(): array
+{
     $out = [];
 
     foreach (TYPES_BILLETS as $id => $t) {
@@ -179,25 +211,31 @@ function types_billets(): array {
     return $out;
 }
 
-function code_billet(int $id_billet): string {
-    return 'PP-' . str_pad((string)$id_billet, 6, '0', STR_PAD_LEFT);
+function code_billet(int $id_billet): string
+{
+    return 'PP-' . str_pad((string) $id_billet, 6, '0', STR_PAD_LEFT);
 }
 
-function id_depuis_code(string $code): ?int {
-    if (!preg_match('/^(?:PP-?)?0*([0-9]{1,9})$/i', trim($code), $m)) return null;
-    return (int)$m[1] ?: null;
+function id_depuis_code(string $code): ?int
+{
+    if (!preg_match('/^(?:PP-?)?0*([0-9]{1,9})$/i', trim($code), $m)) {
+        return null;
+    }
+
+    return (int) $m[1] ?: null;
 }
 
-
-
-const ETAT_DISPONIBLE   = 'Disponible';
+const ETAT_DISPONIBLE = 'Disponible';
 const ETAT_INDISPONIBLE = 'Indisponible';
 
-
-function maj_automatique(PDO $pdo): void {
+function maj_automatique(PDO $pdo): void
+{
     try {
         $echue = "c.statut_commande = 'en attente'
-                  AND COALESCE(c.date_limite_paiement, DATE_ADD(DATE(r.date_visite), INTERVAL 1 DAY)) <= NOW()";
+                  AND COALESCE(
+                      c.date_limite_paiement,
+                      DATE_ADD(DATE(r.date_visite), INTERVAL 1 DAY)
+                  ) <= NOW()";
 
         $pdo->exec(
             "UPDATE billet b
@@ -229,36 +267,24 @@ function maj_automatique(PDO $pdo): void {
              WHERE statut_reservation IN ('confirmée', 'payée')
                AND date_visite < CURDATE()"
         );
-
-        liberer_jeux($pdo);
     } catch (Throwable $e) {
         error_log('maj_automatique : ' . $e->getMessage());
     }
 }
 
-function liberer_jeux(PDO $pdo): void {
-    $pdo->prepare(
-        "UPDATE jeu j
-         SET j.etat = ?
-         WHERE j.etat = ?
-           AND NOT EXISTS (
-               SELECT 1
-               FROM choisir ch
-               JOIN reservation r ON r.num_reservation = ch.num_reservation
-               WHERE ch.id_jeu = j.id_jeu
-                 AND r.origine = 'en ligne'
-                 AND r.statut_reservation IN ('confirmée', 'payée')
-                 AND r.date_visite >= CURDATE()
-           )"
-    )->execute([ETAT_DISPONIBLE, ETAT_INDISPONIBLE]);
+function liberer_jeux(PDO $pdo): void
+{
 }
 
-function telephone_valide(?string $tel): string {
-    $t = preg_replace('/[\s.\-]/', '', (string)$tel);
+function telephone_valide(?string $tel): string
+{
+    $t = preg_replace('/[\s.\-]/', '', (string) $tel);
+
     return preg_match('/^[0-9]{10}$/', $t) ? $t : '';
 }
 
-function erreurs_infos_client(array $u): array {
+function erreurs_infos_client(array $u): array
+{
     $err = [];
 
     if (
@@ -279,11 +305,13 @@ function erreurs_infos_client(array $u): array {
     return $err;
 }
 
-function fin_de_journee(string $dt): string {
+function fin_de_journee(string $dt): string
+{
     return date('Y-m-d 23:59:59', strtotime($dt));
 }
 
-function valider_reservation(PDO $pdo, int $num, string $agent): array {
+function valider_reservation(PDO $pdo, int $num, string $agent): array
+{
     try {
         $pdo->beginTransaction();
 
@@ -303,7 +331,10 @@ function valider_reservation(PDO $pdo, int $num, string $agent): array {
             return _echec($pdo, "Réservation introuvable.");
         }
 
-        if (mb_strtolower(trim((string) $r['statut_reservation'])) !== 'en attente') {
+        if (
+            mb_strtolower(trim((string) $r['statut_reservation']))
+            !== 'en attente'
+        ) {
             return _echec($pdo, "Cette réservation n'est plus en attente.");
         }
 
@@ -334,7 +365,10 @@ function valider_reservation(PDO $pdo, int $num, string $agent): array {
         }
 
         foreach ($jeux as $j) {
-            if (mb_strtolower($j['etat']) !== mb_strtolower(ETAT_DISPONIBLE)) {
+            if (
+                mb_strtolower($j['etat'])
+                !== mb_strtolower(ETAT_DISPONIBLE)
+            ) {
                 return _echec(
                     $pdo,
                     "Le jeu « {$j['nom']} » n'est pas disponible (état : {$j['etat']})."
@@ -364,7 +398,10 @@ function valider_reservation(PDO $pdo, int $num, string $agent): array {
         $st->execute([$num]);
 
         if ($st->fetch()) {
-            return _echec($pdo, "Une commande existe déjà pour cette réservation.");
+            return _echec(
+                $pdo,
+                "Une commande existe déjà pour cette réservation."
+            );
         }
 
         $pdo->prepare(
@@ -373,12 +410,6 @@ function valider_reservation(PDO $pdo, int $num, string $agent): array {
                  email_agent = ?
              WHERE num_reservation = ?"
         )->execute([$agent, $num]);
-
-        $maj = $pdo->prepare("UPDATE jeu SET etat = ? WHERE id_jeu = ?");
-
-        foreach ($jeux as $j) {
-            $maj->execute([ETAT_INDISPONIBLE, $j['id_jeu']]);
-        }
 
         $pdo->prepare(
             "INSERT INTO commande (
@@ -403,9 +434,7 @@ function valider_reservation(PDO $pdo, int $num, string $agent): array {
 
         return [
             true,
-            "Réservation #$num validée : commande #$num_commande créée, jeux indisponibles jusqu'au "
-            . date_fr($r['date_visite'])
-            . "."
+            "Réservation #$num validée : commande #$num_commande créée."
         ];
     } catch (Throwable $e) {
         if ($pdo->inTransaction()) {
@@ -421,7 +450,8 @@ function valider_reservation(PDO $pdo, int $num, string $agent): array {
     }
 }
 
-function annuler_reservation(PDO $pdo, int $num): array {
+function annuler_reservation(PDO $pdo, int $num): array
+{
     try {
         $pdo->beginTransaction();
 
@@ -486,11 +516,9 @@ function annuler_reservation(PDO $pdo, int $num): array {
              WHERE num_reservation = ?"
         )->execute([$num]);
 
-        liberer_jeux($pdo);
-
         $pdo->commit();
 
-        return [true, "Réservation #$num annulée, jeux libérés."];
+        return [true, "Réservation #$num annulée."];
     } catch (Throwable $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
@@ -505,7 +533,11 @@ function annuler_reservation(PDO $pdo, int $num): array {
     }
 }
 
-function encaisser_commande(PDO $pdo, int $num_commande, string $agent): array {
+function encaisser_commande(
+    PDO $pdo,
+    int $num_commande,
+    string $agent
+): array {
     try {
         $pdo->beginTransaction();
 
@@ -559,14 +591,38 @@ function encaisser_commande(PDO $pdo, int $num_commande, string $agent): array {
         );
 
         $st->execute([$num_commande]);
-        if ((int)$st->fetchColumn() === 0) {
-            $nb   = max(1, (int)($c['nb_personnes'] ?? 1));
-            $prix = round((float)$c['montant_total'] / $nb, 2);
-            $debut = date('Y-m-d 00:00:00', strtotime($c['date_visite'] ?? 'today'));
-            $fin   = fin_de_journee($c['date_visite'] ?? 'today');
-            $ins = $pdo->prepare("INSERT INTO billet (date_creation, date_fin, type, statut_billet, quantite, prix_unitaire, num_commande, email_agent)
-                                  VALUES (?, ?, 'Pass journée', 'valide', 1, ?, ?, ?)");
-            $lien = $pdo->prepare("INSERT INTO contient (id_billet, id_jeu) SELECT ?, id_jeu FROM choisir WHERE num_reservation = ?");
+
+        if ((int) $st->fetchColumn() === 0) {
+            $nb = max(1, (int) ($c['nb_personnes'] ?? 1));
+            $prix = round((float) $c['montant_total'] / $nb, 2);
+
+            $debut = date(
+                'Y-m-d 00:00:00',
+                strtotime($c['date_visite'] ?? 'today')
+            );
+
+            $fin = fin_de_journee($c['date_visite'] ?? 'today');
+
+            $ins = $pdo->prepare(
+                "INSERT INTO billet (
+                    date_creation,
+                    date_fin,
+                    type,
+                    statut_billet,
+                    quantite,
+                    prix_unitaire,
+                    num_commande,
+                    email_agent
+                 ) VALUES (?, ?, 'Pass journée', 'valide', 1, ?, ?, ?)"
+            );
+
+            $lien = $pdo->prepare(
+                "INSERT INTO contient (id_billet, id_jeu)
+                 SELECT ?, id_jeu
+                 FROM choisir
+                 WHERE num_reservation = ?"
+            );
+
             for ($i = 0; $i < $nb; $i++) {
                 $ins->execute([
                     $debut,
@@ -635,9 +691,8 @@ function _echec(PDO $pdo, string $msg, ?int $id = null): array
 
 maj_automatique($pdo);
 
-
-
-function entete(string $titre, bool $afficherTitre = true): void {
+function entete(string $titre, bool $afficherTitre = true): void
+{
     $page = basename($_SERVER['SCRIPT_NAME']);
 
     if (
@@ -680,10 +735,10 @@ function entete(string $titre, bool $afficherTitre = true): void {
     >
 
     <style>
-        .agent-header .agent-side--end { flex: 0 0 auto; text-align: right; margin-left: clamp(1.5rem, 4vw, 4rem); }   /* espace entre le menu et l'email */
-        .agent-header .header-account {
-            display: inline-flex; align-items: center; justify-content: flex-end;
-            flex-wrap: nowrap; gap: 12px; max-width: 100%;
+        .agent-header .agent-side--end {
+            flex: 0 0 auto;
+            text-align: right;
+            margin-left: clamp(1.5rem, 4vw, 4rem);
         }
 
         .agent-header .header-account {
