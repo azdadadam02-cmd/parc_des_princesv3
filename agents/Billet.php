@@ -41,10 +41,7 @@ $est_passage = ($cmd['email_client'] === EMAIL_VISITEUR);
 $nom_client  = $est_passage ? 'Visiteur de passage' : trim($cmd['prenom'] . ' ' . $cmd['nom']);
 $date_visite = $cmd['date_visite'] ?: ($billets[0]['date_creation'] ?? $cmd['date_commande']);
 
-<<<<<<< HEAD
 
-=======
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 $date_paiement = null;
 foreach ([$cmd['date_paiement'] ?? null, $cmd['date_commande'] ?? null, $billets[0]['date_creation'] ?? null] as $d) {
     if ($d && strpos((string)$d, '0000-00-00') !== 0 && strtotime((string)$d)) {
