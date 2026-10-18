@@ -1472,3 +1472,75 @@ td.actions>a {
     }
 
 }
+
+
+@media (min-width: 761px) {
+    .admin-sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .admin-sidebar .admin-nav {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .admin-sidebar .sidebar-account {
+        flex-shrink: 0;
+        margin-top: auto;
+        padding-top: 16px;
+        background: inherit;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.admin-sidebar,
+.admin-sidebar .admin-nav {
+    scrollbar-width: thin;
+    scrollbar-color: #6366f1 #13112c;
+}
+
+.admin-sidebar::-webkit-scrollbar,
+.admin-sidebar .admin-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.admin-sidebar::-webkit-scrollbar-track,
+.admin-sidebar .admin-nav::-webkit-scrollbar-track {
+    background: #13112c;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb,
+.admin-sidebar .admin-nav::-webkit-scrollbar-thumb {
+    background: #6366f1;
+    border-radius: 20px;
+}
+
+.admin-sidebar::-webkit-scrollbar-thumb:hover,
+.admin-sidebar .admin-nav::-webkit-scrollbar-thumb:hover {
+    background: #818cf8;
+}

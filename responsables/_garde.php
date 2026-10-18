@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
-
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -27,10 +23,6 @@ if (!$st->fetch()) {
     exit;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
@@ -87,10 +79,6 @@ function mes_jeux(PDO $pdo, string $email): array {
     return $st->fetchAll();
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 
 function entete(string $titre, bool $afficherTitre = true): void {
     $page = basename($_SERVER['SCRIPT_NAME']);
@@ -129,10 +117,7 @@ function entete(string $titre, bool $afficherTitre = true): void {
                 </nav>
             </div>
 
-<<<<<<< HEAD
-=======
             
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
             <div class="col-6 col-lg-auto order-2 order-lg-3 text-end">
                 <div class="header-account">
                     <div class="profile-box" title="<?= h($email) ?>">

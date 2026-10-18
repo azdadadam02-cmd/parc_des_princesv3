@@ -243,9 +243,7 @@ $chartData = [
                     </span>
                 </div>
 
-                <a href="logout.php" class="logout-btn">
-                    Déconnexion
-                </a>
+                
             </div>
         </header>
 

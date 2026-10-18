@@ -23,17 +23,6 @@ if (!$st->fetch()) {
     die("Accès refusé.");
 }
 
-<<<<<<< HEAD
-const MODES_PAIEMENT = ['espèces', 'carte'];
-const MAX_PAR_LIGNE = 20;
-const EMAIL_VISITEUR = 'visiteur@parc.local';
-
-function h($v): string
-{
-    return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
-}
-
-=======
 
 const MODES_PAIEMENT   = ['espèces', 'carte'];
 const MAX_PAR_LIGNE    = 20;                    
@@ -43,7 +32,6 @@ const EMAIL_VISITEUR   = 'visiteur@parc.local';
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
 
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
 function icone(string $nom): string
 {
     static $formes = [
@@ -65,12 +53,7 @@ function dh($v): string
     return number_format((float) $v, 2, ',', ' ') . ' DH';
 }
 
-<<<<<<< HEAD
-function date_fr(?string $d, bool $heure = false): string
-{
-=======
 function date_fr(?string $d, bool $heure = false): string {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     if (!$d) return '—';
 
     $t = strtotime($d);
@@ -78,50 +61,12 @@ function date_fr(?string $d, bool $heure = false): string {
     return $t ? date($heure ? 'd/m/Y H:i' : 'd/m/Y', $t) : '—';
 }
 
-<<<<<<< HEAD
-function date_valide(string $s): string
-{
-=======
 function date_valide(string $s): string {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     $d = DateTime::createFromFormat('Y-m-d', $s);
 
     return ($d && $d->format('Y-m-d') === $s) ? $s : '';
 }
 
-<<<<<<< HEAD
-function classe_statut_reservation(?string $s): string
-{
-    switch (mb_strtolower(trim((string) $s))) {
-        case 'confirmée':
-            return 'is-ok';
-
-        case 'payée':
-            return 'is-info';
-
-        case 'utilisée':
-            return 'is-muted';
-
-        case 'annulée':
-            return 'is-danger';
-
-        default:
-            return 'is-warn';
-    }
-}
-
-function evaluer_billet(array $b): array
-{
-    $s = mb_strtolower(trim((string) $b['statut_billet']));
-
-    if (mb_strtolower((string) $b['statut_commande']) !== 'payée') {
-        return [
-            false,
-            'Non payé',
-            'is-danger',
-            "La commande associée n'est pas payée."
-        ];
-=======
 function classe_statut_reservation(?string $s): string {
     switch (mb_strtolower(trim((string)$s))) {
         case 'confirmée': return 'is-ok';
@@ -138,7 +83,6 @@ function evaluer_billet(array $b): array {
     $s = mb_strtolower(trim((string)$b['statut_billet']));
     if (mb_strtolower((string)$b['statut_commande']) !== 'payée') {
         return [false, 'Non payé', 'is-danger', "La commande associée n'est pas payée."];
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     }
 
     if ($s === 'annulé') {
@@ -176,18 +120,8 @@ function evaluer_billet(array $b): array {
     ];
 }
 
-<<<<<<< HEAD
-function csrf_token(string $nom): string
-{
-    if (
-        !isset($_SESSION['csrf_token']) ||
-        !is_string($_SESSION['csrf_token']) ||
-        $_SESSION['csrf_token'] === ''
-    ) {
-=======
 function csrf_token(string $nom): string {
     if (!isset($_SESSION['csrf_token']) || !is_string($_SESSION['csrf_token']) || $_SESSION['csrf_token'] === '') {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 
@@ -235,12 +169,7 @@ const TYPES_BILLETS = [
     ],
 ];
 
-<<<<<<< HEAD
-function types_billets(): array
-{
-=======
 function types_billets(): array {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     $out = [];
 
     foreach (TYPES_BILLETS as $id => $t) {
@@ -250,27 +179,6 @@ function types_billets(): array {
     return $out;
 }
 
-<<<<<<< HEAD
-function code_billet(int $id_billet): string
-{
-    return 'PP-' . str_pad((string) $id_billet, 6, '0', STR_PAD_LEFT);
-}
-
-function id_depuis_code(string $code): ?int
-{
-    if (!preg_match('/^(?:PP-?)?0*([0-9]{1,9})$/i', trim($code), $m)) {
-        return null;
-    }
-
-    return (int) $m[1] ?: null;
-}
-
-const ETAT_DISPONIBLE = 'Disponible';
-const ETAT_INDISPONIBLE = 'Indisponible';
-
-function maj_automatique(PDO $pdo): void
-{
-=======
 function code_billet(int $id_billet): string {
     return 'PP-' . str_pad((string)$id_billet, 6, '0', STR_PAD_LEFT);
 }
@@ -287,7 +195,6 @@ const ETAT_INDISPONIBLE = 'Indisponible';
 
 
 function maj_automatique(PDO $pdo): void {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     try {
         $echue = "c.statut_commande = 'en attente'
                   AND COALESCE(c.date_limite_paiement, DATE_ADD(DATE(r.date_visite), INTERVAL 1 DAY)) <= NOW()";
@@ -329,12 +236,7 @@ function maj_automatique(PDO $pdo): void {
     }
 }
 
-<<<<<<< HEAD
-function liberer_jeux(PDO $pdo): void
-{
-=======
 function liberer_jeux(PDO $pdo): void {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     $pdo->prepare(
         "UPDATE jeu j
          SET j.etat = ?
@@ -351,24 +253,12 @@ function liberer_jeux(PDO $pdo): void {
     )->execute([ETAT_DISPONIBLE, ETAT_INDISPONIBLE]);
 }
 
-<<<<<<< HEAD
-function telephone_valide(?string $tel): string
-{
-    $t = preg_replace('/[\s.\-]/', '', (string) $tel);
-
-    return preg_match('/^[0-9]{10}$/', $t) ? $t : '';
-}
-
-function erreurs_infos_client(array $u): array
-{
-=======
 function telephone_valide(?string $tel): string {
     $t = preg_replace('/[\s.\-]/', '', (string)$tel);
     return preg_match('/^[0-9]{10}$/', $t) ? $t : '';
 }
 
 function erreurs_infos_client(array $u): array {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     $err = [];
 
     if (
@@ -389,21 +279,11 @@ function erreurs_infos_client(array $u): array {
     return $err;
 }
 
-<<<<<<< HEAD
-function fin_de_journee(string $dt): string
-{
-    return date('Y-m-d 23:59:59', strtotime($dt));
-}
-
-function valider_reservation(PDO $pdo, int $num, string $agent): array
-{
-=======
 function fin_de_journee(string $dt): string {
     return date('Y-m-d 23:59:59', strtotime($dt));
 }
 
 function valider_reservation(PDO $pdo, int $num, string $agent): array {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     try {
         $pdo->beginTransaction();
 
@@ -541,12 +421,7 @@ function valider_reservation(PDO $pdo, int $num, string $agent): array {
     }
 }
 
-<<<<<<< HEAD
-function annuler_reservation(PDO $pdo, int $num): array
-{
-=======
 function annuler_reservation(PDO $pdo, int $num): array {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     try {
         $pdo->beginTransaction();
 
@@ -630,15 +505,7 @@ function annuler_reservation(PDO $pdo, int $num): array {
     }
 }
 
-<<<<<<< HEAD
-function encaisser_commande(
-    PDO $pdo,
-    int $num_commande,
-    string $agent
-): array {
-=======
 function encaisser_commande(PDO $pdo, int $num_commande, string $agent): array {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     try {
         $pdo->beginTransaction();
 
@@ -692,40 +559,6 @@ function encaisser_commande(PDO $pdo, int $num_commande, string $agent): array {
         );
 
         $st->execute([$num_commande]);
-<<<<<<< HEAD
-
-        if ((int) $st->fetchColumn() === 0) {
-            $nb = max(1, (int) ($c['nb_personnes'] ?? 1));
-            $prix = round((float) $c['montant_total'] / $nb, 2);
-
-            $debut = date(
-                'Y-m-d 00:00:00',
-                strtotime($c['date_visite'] ?? 'today')
-            );
-
-            $fin = fin_de_journee($c['date_visite'] ?? 'today');
-
-            $ins = $pdo->prepare(
-                "INSERT INTO billet (
-                    date_creation,
-                    date_fin,
-                    type,
-                    statut_billet,
-                    quantite,
-                    prix_unitaire,
-                    num_commande,
-                    email_agent
-                 ) VALUES (?, ?, 'Pass journée', 'valide', 1, ?, ?, ?)"
-            );
-
-            $lien = $pdo->prepare(
-                "INSERT INTO contient (id_billet, id_jeu)
-                 SELECT ?, id_jeu
-                 FROM choisir
-                 WHERE num_reservation = ?"
-            );
-
-=======
         if ((int)$st->fetchColumn() === 0) {
             $nb   = max(1, (int)($c['nb_personnes'] ?? 1));
             $prix = round((float)$c['montant_total'] / $nb, 2);
@@ -734,7 +567,6 @@ function encaisser_commande(PDO $pdo, int $num_commande, string $agent): array {
             $ins = $pdo->prepare("INSERT INTO billet (date_creation, date_fin, type, statut_billet, quantite, prix_unitaire, num_commande, email_agent)
                                   VALUES (?, ?, 'Pass journée', 'valide', 1, ?, ?, ?)");
             $lien = $pdo->prepare("INSERT INTO contient (id_billet, id_jeu) SELECT ?, id_jeu FROM choisir WHERE num_reservation = ?");
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
             for ($i = 0; $i < $nb; $i++) {
                 $ins->execute([
                     $debut,
@@ -803,14 +635,9 @@ function _echec(PDO $pdo, string $msg, ?int $id = null): array
 
 maj_automatique($pdo);
 
-<<<<<<< HEAD
-function entete(string $titre, bool $afficherTitre = true): void
-{
-=======
 
 
 function entete(string $titre, bool $afficherTitre = true): void {
->>>>>>> feab606286d00ffa11933929f530d92c2addcd45
     $page = basename($_SERVER['SCRIPT_NAME']);
 
     if (
