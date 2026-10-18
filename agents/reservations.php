@@ -34,7 +34,7 @@ if (!isset(LIBELLES_STATUT[$statut])) $statut = '';
 
 $sql = "SELECT r.num_reservation, r.date_creation, r.date_visite, r.nb_personnes, r.montant, r.statut_reservation,
                u.nom, u.prenom, u.email, u.telephone,
-               GROUP_CONCAT(DISTINCT j.nom ORDER BY j.nom SEPARATOR ', ') AS jeux
+               GROUP_CONCAT(DISTINCT CONCAT(j.nom, ' (x', ch.quantite, ')') ORDER BY j.nom SEPARATOR ', ') AS jeux
         FROM reservation r
         JOIN utilisateur u ON u.email = r.email_client
         LEFT JOIN choisir ch ON ch.num_reservation = r.num_reservation
@@ -49,8 +49,9 @@ if ($q !== '') {
 if ($statut !== '') { $sql .= " AND r.statut_reservation = ?"; $p[] = $statut; }
 $sql .= " GROUP BY r.num_reservation, r.date_creation, r.date_visite, r.nb_personnes, r.montant,
                    r.statut_reservation, u.nom, u.prenom, u.email, u.telephone
-          ORDER BY (r.statut_reservation = 'en attente') DESC, r.date_visite ASC, r.num_reservation DESC
+          ORDER BY (r.statut_reservation = 'en attente') DESC, r.num_reservation DESC
           LIMIT 200";
+
 $st = $pdo->prepare($sql);
 $st->execute($p);
 $reservations = $st->fetchAll();
