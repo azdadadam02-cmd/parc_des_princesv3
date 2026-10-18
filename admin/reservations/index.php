@@ -46,7 +46,6 @@ $sql = "
 $params = [];
 
 
-/* Recherche client */
 
 if ($recherche !== '') {
 
@@ -64,7 +63,6 @@ if ($recherche !== '') {
 }
 
 
-/* Filtre statut */
 
 if ($statut !== '') {
 
@@ -76,7 +74,6 @@ if ($statut !== '') {
 }
 
 
-/* Filtre date visite */
 
 if ($date !== '') {
 
@@ -153,7 +150,6 @@ $reservations =
     </div>
 
 
-    <!-- FILTRES -->
 
     <form
         method="GET"
@@ -237,7 +233,6 @@ $reservations =
     </form>
 
 
-    <!-- TABLE -->
 
     <div class="table-box">
 

@@ -4,9 +4,7 @@ require_once __DIR__ . '/admin/includes/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    /* =====================================================
-       LOGIN (SE CONNECTER)
-    ===================================================== */
+    
     if (isset($_POST['btn_login'])) {
 
         $signin_errors = [];
@@ -15,14 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $_SESSION['signin_old'] = ['email' => $email];
 
-        // Vérification email
         if ($email === '') {
             $signin_errors['email'] = "Veuillez entrer votre email.";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $signin_errors['email'] = "Adresse email invalide.";
         }
 
-        // Vérification mot de passe
         if ($mot_passe === '') {
             $signin_errors['mot_passe'] = "Veuillez entrer votre mot de passe.";
         }
@@ -90,9 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    /* =====================================================
-       SIGN UP CLIENT (CRÉER COMPTE)
-    ===================================================== */
+   
     elseif (isset($_POST['btn_signup'])) {
 
         $signup_errors = [];
@@ -105,7 +99,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'email' => $email
         ];
 
-        // Validation Nom
         if ($nom_complet === '') {
             $signup_errors['nom'] = "Le nom est obligatoire.";
         } elseif (mb_strlen($nom_complet) < 3 || mb_strlen($nom_complet) > 50) {
@@ -114,7 +107,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $signup_errors['nom'] = "Le nom ne doit contenir que des lettres.";
         }
 
-        // Validation Email
         if ($email === '') {
             $signup_errors['email'] = "L'email est obligatoire.";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -123,7 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $signup_errors['email'] = "L'email est trop long.";
         }
 
-        // Validation Mot de passe
         if ($mot_passe === '') {
             $signup_errors['mot_passe'] = "Le mot de passe est obligatoire.";
         } elseif (strlen($mot_passe) < 8) {

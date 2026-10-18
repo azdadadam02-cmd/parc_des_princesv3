@@ -1,5 +1,4 @@
 <?php
-// À inclure en première ligne de CHAQUE page de l'espace responsable.
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -24,9 +23,7 @@ if (!$st->fetch()) {
     exit;
 }
 
-/* =========================================================
-   Helpers
-   ========================================================= */
+
 
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
@@ -46,12 +43,10 @@ function csrf_ok(string $nom): bool {
         && hash_equals($_SESSION['csrf_token'], (string)$_POST['csrf']);
 }
 
-/** Première lettre en majuscule (compatible UTF-8). */
 function ucfirst_fr(string $s): string {
     return mb_strtoupper(mb_substr($s, 0, 1)) . mb_substr($s, 1);
 }
 
-/** Classe CSS de couleur (is-*) selon l'état d'un jeu. */
 function classe_etat_jeu(?string $etat): string {
     $e = mb_strtolower(trim((string)$etat));
     if (in_array($e, ['disponible', 'en fonctionnement'], true)) return 'is-ok';
@@ -59,7 +54,6 @@ function classe_etat_jeu(?string $etat): string {
     return 'is-danger';
 }
 
-/** Classe CSS de couleur (is-*) selon le statut d'une réservation. */
 function classe_statut_reservation(?string $s): string {
     switch (mb_strtolower(trim((string)$s))) {
         case 'confirmée': return 'is-ok';
@@ -70,7 +64,6 @@ function classe_statut_reservation(?string $s): string {
     }
 }
 
-/** Retourne le jeu s'il est affecté à ce responsable, sinon null. */
 function jeu_du_responsable(PDO $pdo, int $id_jeu, string $email): ?array {
     $st = $pdo->prepare(
         "SELECT j.*, c.nom_categorie
@@ -81,16 +74,13 @@ function jeu_du_responsable(PDO $pdo, int $id_jeu, string $email): ?array {
     return $st->fetch() ?: null;
 }
 
-/** Liste des jeux du responsable (pour les filtres). */
 function mes_jeux(PDO $pdo, string $email): array {
     $st = $pdo->prepare("SELECT id_jeu, nom FROM JEU WHERE email_responsable = ? ORDER BY nom");
     $st->execute([$email]);
     return $st->fetchAll();
 }
 
-/* =========================================================
-   Squelette HTML commun
-   ========================================================= */
+
 
 function entete(string $titre, bool $afficherTitre = true): void {
     $page = basename($_SERVER['SCRIPT_NAME']);
@@ -117,12 +107,10 @@ function entete(string $titre, bool $afficherTitre = true): void {
     <div class="container">
         <div class="row align-center">
 
-            <!-- Logo -->
             <div class="col-6 col-lg-auto">
                  <img src="assets/logo.png" alt="Parc des Prince" class="site-logo">
             </div>
 
-            <!-- Navigation (sous le logo sur mobile, au centre sur PC) -->
             <div class="col-12 col-lg order-3 order-lg-2">
                 <nav class="nav-pill">
                     <?php foreach ($liens as $url => $nom): ?>
@@ -131,7 +119,6 @@ function entete(string $titre, bool $afficherTitre = true): void {
                 </nav>
             </div>
 
-            <!-- Compte -->
             <div class="col-6 col-lg-auto order-2 order-lg-3 text-end">
                 <div class="header-account">
                     <div class="profile-box" title="<?= h($email) ?>">

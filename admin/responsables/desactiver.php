@@ -11,7 +11,6 @@ if (empty($email)) {
 }
 
 
-// Vérifier que le responsable existe
 $stmt = $pdo->prepare("
     SELECT email
     FROM responsable_de_jeu
@@ -35,9 +34,7 @@ try {
     $pdo->beginTransaction();
 
 
-    // ===============================
-    // Désactiver le responsable
-    // ===============================
+    
 
     $stmt = $pdo->prepare("
         UPDATE responsable_de_jeu
@@ -50,9 +47,7 @@ try {
     ]);
 
 
-    // ===============================
-    // Retirer le responsable des jeux
-    // ===============================
+    
 
     $stmt = $pdo->prepare("
         UPDATE jeu

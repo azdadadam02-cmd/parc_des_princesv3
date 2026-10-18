@@ -18,9 +18,7 @@ if (!$id) {
 }
 
 
-// ==========================
-// Récupérer le jeu
-// ==========================
+
 
 $stmt = $pdo->prepare("
     SELECT *
@@ -39,9 +37,7 @@ if (!$jeu) {
 }
 
 
-// ==========================
-// Catégories
-// ==========================
+
 
 $stmt = $pdo->query("
     SELECT *
@@ -53,9 +49,7 @@ $categories =
     $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-// ==========================
-// Responsables
-// ==========================
+
 
 $sqlResponsables = "
     SELECT
@@ -79,9 +73,7 @@ $responsables =
     $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-// ==========================
-// Modification
-// ==========================
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tarif_promo = is_string($_POST['tarif_promo'] ?? null) ? str_replace(',', '.', trim($_POST['tarif_promo'])) : '';

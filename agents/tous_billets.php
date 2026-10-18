@@ -1,7 +1,5 @@
 <?php
-// ============================================================
-// LISTE DES BILLETS (lecture seule) : recherche et réimpression
-// ============================================================
+
 require_once __DIR__ . '/_garde.php';
 
 $q = mb_substr(trim((string)($_GET['q'] ?? '')), 0, 100);

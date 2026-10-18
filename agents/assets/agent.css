@@ -1,29 +1,25 @@
 
 Agent · CSS
-/* =========================================================
-   ESPACE AGENT DE VENTE — styles complémentaires
-   (s'ajoute à style.css, ne modifie rien de l'existant)
-   ========================================================= */
+
 
 .mt-1 { margin-top: 1rem; }
 .mb-0 { margin-bottom: 0; }
 
-/* ----- En-tête agent : logo | menu sur UNE ligne | compte ----- */
 .agent-header-inner {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
-.agent-side { flex: 1 1 0; min-width: 0; }            /* même largeur à gauche et à droite -> menu centré */
-.agent-side--end { flex: 0 0 auto; text-align: right; }   /* largeur du contenu : email + Déconnexion sur une ligne */
+.agent-side { flex: 1 1 0; min-width: 0; }           
+.agent-side--end { flex: 0 0 auto; text-align: right; }   
 .agent-header .nav-pill {
     flex: 0 1 auto;
     min-width: 0;
-    flex-wrap: nowrap;                                  /* jamais de retour à la ligne */
+    flex-wrap: nowrap;                                 
     justify-content: flex-start;
     gap: 0 clamp(0.9rem, 2vw, 2.2rem);
     padding: 0.65rem clamp(1rem, 2vw, 2rem);
-    overflow-x: auto;                                   /* écran très étroit : défilement, toujours 1 ligne */
+    overflow-x: auto;                                   
     scrollbar-width: none;
 }
 .agent-header .nav-pill::-webkit-scrollbar { display: none; }
@@ -35,7 +31,6 @@ Agent · CSS
     .agent-header .nav-pill { order: 3; flex: 1 1 100%; }
 }
 
-/* ----- Ligne de billet (type + prix + quantité) ----- */
 .ticket-line {
     display: flex;
     align-items: center;
@@ -51,7 +46,6 @@ Agent · CSS
 .ticket-qty .form-control { width: 80px; text-align: center; padding: 0.55rem 0.4rem; }
 .ticket-sub   { min-width: 90px; text-align: right; color: var(--muted); font-size: 0.9rem; }
 
-/* ----- Récapitulatif / total ----- */
 .total-box {
     padding: 1.2rem;
     background: var(--box);
@@ -62,7 +56,6 @@ Agent · CSS
 .total-label { display: block; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: .5px; }
 .total-value { display: block; margin-top: 0.3rem; color: var(--white); font-size: 2rem; font-weight: 700; }
 
-/* ----- Choix client ----- */
 .client-panel[hidden] { display: none; }
 .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 0.6rem; }
 .check-item {
@@ -76,7 +69,6 @@ Agent · CSS
 }
 .check-item input { accent-color: var(--primary-light); }
 
-/* ----- Code billet ----- */
 .code-billet {
     font-family: Consolas, 'Courier New', monospace;
     letter-spacing: 1px;
@@ -84,7 +76,6 @@ Agent · CSS
     white-space: nowrap;
 }
 
-/* ----- Résultat de vérification ----- */
 .verdict {
     padding: 1.5rem;
     border: 2px solid;
@@ -102,7 +93,6 @@ Agent · CSS
 .search-big { display: flex; gap: 0.8rem; flex-wrap: wrap; }
 .search-big .form-control { flex: 1 1 260px; font-size: 1.1rem; text-transform: uppercase; }
 
-/* ----- Impression du reçu ----- */
 @media print {
     .site-header, .no-print, .btn { display: none !important; }
     body { background: #fff !important; color: #000 !important; }

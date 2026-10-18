@@ -36,7 +36,6 @@ if (!$responsable) {
 }
 
 
-// récupérer jeux
 $stmt = $pdo->query("
     SELECT
         id_jeu,
@@ -51,7 +50,6 @@ $stmt = $pdo->query("
 $jeux = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-// affectation
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $id_jeu = filter_input(

@@ -1,8 +1,6 @@
 <?php
 
-// ===========================
-// Images des jeux
-// ===========================
+
 
 function jeu_racine_web(): string
 {
@@ -38,7 +36,6 @@ function jeu_image_affichage($image): string
         return jeu_racine_web() . '/' . $image;
     }
 
-    // Anciennes photos enregistrées uniquement avec leur nom de fichier.
     return jeu_racine_web() . '/admin/uploads/jeux/' . rawurlencode($image);
 }
 
@@ -53,7 +50,6 @@ function jeu_recevoir_image($image_actuelle, bool $obligatoire): array
 
     $url = trim($url);
 
-    // Un fichier choisi sur le PC est prioritaire sur le lien URL.
     if ($fichier && ($fichier['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
         if (
             !is_int($fichier['error'] ?? null) ||
@@ -100,7 +96,6 @@ function jeu_recevoir_image($image_actuelle, bool $obligatoire): array
             throw new RuntimeException("L'enregistrement de l'image a échoué.");
         }
 
-        // Chemin utilisable directement depuis Admin, Client et le panier.
         $chemin_web = jeu_racine_web() . '/admin/uploads/jeux/' . $nom_fichier;
 
         return [$chemin_web, $chemin_fichier];

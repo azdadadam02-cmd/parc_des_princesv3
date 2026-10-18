@@ -10,9 +10,7 @@ $message = "";
 $error = "";
 
 
-// ===========================
-// Charger catégories
-// ===========================
+
 
 $stmt = $pdo->query("
     SELECT *
@@ -24,9 +22,7 @@ $categories =
     $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
-// ===========================
-// Charger responsables
-// ===========================
+
 
 $sqlResponsables = "
 
@@ -52,9 +48,7 @@ $responsables =
     $stmtResponsables->fetchAll(PDO::FETCH_ASSOC);
 
 
-// ===========================
-// Ajouter jeu
-// ===========================
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tarif_promo = is_string($_POST['tarif_promo'] ?? null) ? str_replace(',', '.', trim($_POST['tarif_promo'])) : '';

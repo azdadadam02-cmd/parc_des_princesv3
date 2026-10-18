@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/_garde.php';
 
-/* ---------- 1. Jeu (uniquement s'il est affecté à ce responsable) ---------- */
 $id  = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $jeu = $id ? jeu_du_responsable($pdo, $id, $email_resp) : null;
 
@@ -10,7 +9,6 @@ if (!$jeu) {
     die("Jeu introuvable ou non affecté à votre compte.");
 }
 
-/* ---------- 1b. Clôturer une panne : dépense + jeu de nouveau disponible ---------- */
 $erreur_cloture = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cloturer') {
     $id_m_brut = $_POST['id_maintenance'] ?? null;
@@ -34,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'clotu
         try {
             $pdo->beginTransaction();
 
-            // L'intervention doit appartenir à CE jeu et ne pas être déjà terminée
             $st = $pdo->prepare(
                 "SELECT description FROM MAINTENANCE
                  WHERE id_maintenance = ? AND id_jeu = ? AND COALESCE(etat_intervention,'') <> 'Terminée'
@@ -47,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'clotu
                 $pdo->rollBack();
                 $erreur_cloture = "Cette intervention n'existe pas ou est déjà terminée.";
             } else {
-                // 1) Intervention terminée, coût et prochaine date planifiée.
                 $st = $pdo->prepare(
                     "UPDATE MAINTENANCE
                      SET etat_intervention = 'Terminée', cout = ?, date_prochaine_maintenance = ?
@@ -58,13 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'clotu
                     throw new RuntimeException("L'intervention n'a pas pu être mise à jour.");
                 }
 
-                // 2) Dépense liée au jeu
                 $pdo->prepare(
                     "INSERT INTO DEPENSE (categorie_depense, description_depense, montant_depense, date_depense, type_depense, email_utilisateur, id_jeu)
                      VALUES ('Maintenance', ?, ?, CURDATE(), 'Réparation', ?, ?)"
                 )->execute([$m_ouverte['description'], $cout, $email_resp, $id]);
 
-                // 3) Si plus aucune intervention ouverte -> le jeu redevient disponible
                 $st = $pdo->prepare(
                     "SELECT COUNT(*) FROM MAINTENANCE
                      WHERE id_jeu = ? AND COALESCE(etat_intervention,'') <> 'Terminée'"
@@ -87,7 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'clotu
     }
 }
 
-/* ---------- 2. 10 dernières interventions de maintenance ---------- */
 $st = $pdo->prepare(
     "SELECT * FROM MAINTENANCE
      WHERE id_jeu = ?
@@ -97,18 +90,15 @@ $st = $pdo->prepare(
 $st->execute([$id]);
 $maint = $st->fetchAll();
 
-/* ---------- 3. Badge d'état ---------- */
 $etat_brut   = trim((string)($jeu['etat'] ?? ''));
 $etat_classe = classe_etat_jeu($etat_brut);
 $etat_texte  = $etat_brut !== '' ? ucfirst_fr(mb_strtolower($etat_brut)) : 'Non défini';
 
-/* ---------- 4. Les 6 boîtes d'information ---------- */
 $age = $jeu['age_min'] ?? null;
 
 $icones_cat = [1 => 'monitor', 2 => 'gamepad-2', 3 => 'target', 4 => 'home'];
 $icone_cat  = $icones_cat[$jeu['id_categorie']] ?? 'gamepad-2';
 
-// Chaque info = [icône SVG, valeur]
 $infos = [
     'Catégorie'       => [$icone_cat,     $jeu['nom_categorie'] ?? 'N/A'],
     'Âge minimum'     => ['shield-check', ($age !== null && $age !== '') ? $age . ' ans' : 'Tous âges'],
@@ -121,19 +111,16 @@ $infos = [
 entete("Détails - " . $jeu['nom']);
 ?>
 
-<!-- ===== Retour ===== -->
 <div class="row">
     <div class="col-12">
         <a href="index.php" class="btn btn-ghost btn-back">← Retour à mes jeux</a>
     </div>
 </div>
 
-<!-- ===== Fiche du jeu ===== -->
 <div class="row">
     <div class="col-12">
         <article class="card card-lg">
 
-            <!-- Titre + état -->
             <div class="sep-bottom">
                 <div class="row align-center justify-between">
                     <div class="col-12 col-sm">
@@ -145,7 +132,6 @@ entete("Détails - " . $jeu['nom']);
                 </div>
             </div>
 
-            <!-- Description -->
             <div class="row">
                 <div class="col-12">
                     <div class="box">
@@ -155,7 +141,6 @@ entete("Détails - " . $jeu['nom']);
                 </div>
             </div>
 
-            <!-- Infos : 1 / 2 / 3 boîtes par ligne -->
             <div class="row">
                 <?php foreach ($infos as $label => [$icone, $valeur]): ?>
                     <div class="col-12 col-sm-6 col-md-4">
@@ -170,14 +155,12 @@ entete("Détails - " . $jeu['nom']);
                 <?php endforeach; ?>
             </div>
 
-            <!-- Actions -->
             
 
         </article>
     </div>
 </div>
 
-<!-- ===== Dernières interventions ===== -->
 <div class="row">
     <div class="col-12">
         <section class="card">

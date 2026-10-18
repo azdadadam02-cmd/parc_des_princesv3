@@ -14,9 +14,6 @@ $id_jeu = filter_input(
 );
 
 
-// ==========================
-// Liste des jeux
-// ==========================
 
 $stmtJeux = $pdo->query("
     SELECT
@@ -30,9 +27,7 @@ $jeux =
     $stmtJeux->fetchAll(PDO::FETCH_ASSOC);
 
 
-// ==========================
-// Maintenances
-// ==========================
+
 
 $sql = "
     SELECT
@@ -65,7 +60,6 @@ $sql = "
 $params = [];
 
 
-// Recherche
 if ($recherche !== '') {
 
     $sql .= "
@@ -81,7 +75,6 @@ if ($recherche !== '') {
 }
 
 
-// Filtre état
 if ($etat !== '') {
 
     $sql .= "
@@ -92,7 +85,6 @@ if ($etat !== '') {
 }
 
 
-// Filtre jeu
 if ($id_jeu) {
 
     $sql .= "

@@ -1,9 +1,5 @@
 <?php
-// ============================================================
-// RÉSERVATIONS EN LIGNE
-// Validation (jeux Indisponible + commande créée) ou annulation (jeux libérés).
-// Le passage en « Terminée » est automatique (voir maj_automatique dans _garde.php).
-// ============================================================
+
 require_once __DIR__ . '/_garde.php';
 
 const LIBELLES_STATUT = [
@@ -33,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-/* ---------- Filtres ---------- */
 $q = mb_substr(trim((string)($_GET['q'] ?? '')), 0, 100);
 $statut = (string)($_GET['statut'] ?? '');
 if (!isset(LIBELLES_STATUT[$statut])) $statut = '';

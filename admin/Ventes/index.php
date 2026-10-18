@@ -20,7 +20,6 @@ $stmtStatuts = $pdo->query("
 $statuts = $stmtStatuts->fetchAll(PDO::FETCH_COLUMN);
 
 
-/* commandes */
 
 $sql = "
     SELECT
@@ -52,7 +51,6 @@ $sql = "
 $params = [];
 
 
-/* recherche */
 
 if ($recherche !== '') {
 
@@ -70,7 +68,6 @@ if ($recherche !== '') {
 }
 
 
-/* statut */
 
 if ($statut !== '') {
 
@@ -82,7 +79,6 @@ if ($statut !== '') {
 }
 
 
-/* date */
 
 if ($date !== '') {
 

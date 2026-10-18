@@ -14,9 +14,7 @@ $id_jeu = filter_input(
 );
 
 
-// ===============================
-// Jeux pour filtre
-// ===============================
+
 
 $stmtJeux = $pdo->query("
     SELECT id_jeu, nom
@@ -27,9 +25,7 @@ $stmtJeux = $pdo->query("
 $jeux = $stmtJeux->fetchAll(PDO::FETCH_ASSOC);
 
 
-// ===============================
-// Dépenses
-// ===============================
+
 
 $sql = "
     SELECT
@@ -62,7 +58,6 @@ $sql = "
 $params = [];
 
 
-// Recherche
 if ($recherche !== '') {
 
     $sql .= "
@@ -78,7 +73,6 @@ if ($recherche !== '') {
 }
 
 
-// Type
 if ($type !== '') {
 
     $sql .= "
@@ -89,7 +83,6 @@ if ($type !== '') {
 }
 
 
-// Date
 if ($date !== '') {
 
     $sql .= "
@@ -100,7 +93,6 @@ if ($date !== '') {
 }
 
 
-// Jeu
 if ($id_jeu) {
 
     $sql .= "
@@ -165,7 +157,6 @@ $depenses =
     </div>
 
 
-    <!-- FILTRES -->
 
     <form
         method="GET"
@@ -252,7 +243,6 @@ $depenses =
     </form>
 
 
-    <!-- TABLE -->
 
     <div class="table-box">
 

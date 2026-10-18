@@ -10,7 +10,6 @@ if ($id === '') {
 }
 
 
-/* commande */
 
 $stmt = $pdo->prepare("
     SELECT
@@ -48,7 +47,6 @@ if (!$commande) {
 }
 
 
-/* billets de cette commande */
 
 $stmt = $pdo->prepare("
     SELECT *

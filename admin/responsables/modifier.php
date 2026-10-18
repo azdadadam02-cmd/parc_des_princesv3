@@ -12,9 +12,7 @@ if (empty($email)) {
 }
 
 
-// ===============================
-// Récupérer le responsable
-// ===============================
+
 
 $sql = "
     SELECT
@@ -48,9 +46,7 @@ if (!$responsable) {
 }
 
 
-// ===============================
-// Modifier
-// ===============================
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -63,9 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $statut = $_POST['statut_responsable'];
 
 
-    // ===============================
-    // VALIDATION
-    // ===============================
+    
 
     if (
         empty($nom) ||
@@ -106,9 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
 
 
-            // ===============================
-            // Modifier UTILISATEUR
-            // ===============================
+            
 
             $stmt = $pdo->prepare("
                 UPDATE utilisateur
@@ -129,9 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
 
-            // ===============================
-            // Modifier RESPONSABLE
-            // ===============================
+           
 
             $stmt = $pdo->prepare("
                 UPDATE responsable_de_jeu
@@ -253,7 +243,6 @@ require_once __DIR__ . '/../includes/sidebar.php';
             <div class="form-grid">
 
 
-                <!-- NOM -->
 
                 <div class="form-group">
 
@@ -282,7 +271,6 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
 
 
-                <!-- PRENOM -->
 
                 <div class="form-group">
 
@@ -311,7 +299,6 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
 
 
-                <!-- EMAIL -->
 
                 <div class="form-group">
 
@@ -332,7 +319,6 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
 
 
-                <!-- TELEPHONE -->
 
                 <div class="form-group">
 
@@ -364,7 +350,6 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
 
 
-                <!-- FONCTION -->
 
                 <div class="form-group">
 
@@ -387,7 +372,6 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
 
 
-                <!-- DATE EMBAUCHE -->
 
                 <div class="form-group">
 
@@ -408,7 +392,6 @@ require_once __DIR__ . '/../includes/sidebar.php';
                 </div>
 
 
-                <!-- STATUT -->
 
                 <div class="form-group">
 
